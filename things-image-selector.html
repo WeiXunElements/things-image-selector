@@ -7,6 +7,7 @@
 <link ref="import" href="../paper-toolbar/paper-toobar.html">
 <link ref="import" href="../things-ajax/things-ajax.html">
 <link ref="import" href="../things-card-image/things-card-image-list.html">
+<link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
 
 <!--
 `<things-image-selector>` Things Image Selector
@@ -39,6 +40,16 @@
       @apply(--things-picker-button);
       background:url(/images/icon-resource-select.png) 50% 3px no-repeat var(--paper-blue-grey-300);
     }
+    paper-dialog {
+    position: fixed;
+    top: 10%;
+    bottom:10%;
+    left: 15%;
+    right: 15%;
+    margin: 0px;
+    @apply(--layout-flex);
+    @apply(--layout-vertical);
+    }
     paper-toolbar{
       background-color:var(--things-primary-background-color);
       height:45px;
@@ -47,18 +58,12 @@
     }
     paper-toolbar::shadow #topBar{
       height:45px;
-    }
-    paper-toolbar::shadow #bottomBar {
-      height: 45px;
-      @apply(--layout-horizontal);
-      @apply(--layout-end-justified);
-      padding: 0 10px;
-    }      
+    } 
     paper-toolbar .title{
       margin-left:32px !important;
       line-height:initial !important;
     }
-    form{
+    fixedorm{
       @apply(--things-default-padding);
       padding-bottom:5px;
       border-bottom:1px solid rgba(0,0,0,.1);
@@ -71,6 +76,9 @@
       background:url(/images/icon-close.png) 100% 50% no-repeat;
       margin-right:10px;
     }
+    .container {
+      overflow-y: auto;
+    }    
   </style>
   <template>
     <input is="iron-input" name="[[name]]" bind-value="[[value]]" hidden>
@@ -94,23 +102,29 @@
       </paper-toolbar>
 
       <things-ajax
-        auto
         id="attachment-search"
         method="GET"
         resource-url="[[resourceUrl]]"
         resource-action="index" 
         page="[[page]]" 
         limit="[[limit]]"
+        loading ="{{loading}}"
         last-response="{{lastResponse}}">
       </things-ajax>
 
-      <paper-dialog-scrollable>
-        <things-card-image-list
-          items="[[newItems]]"
-          detail-fields="[[detailFIelds]]"
-          is-selector>
-        </things-card-image-list>
-      </paper-dialog-scrollable>
+      <things-card-image-list
+        id="card-list"
+        class="container"
+        items="[[newItems]]"
+        detail-fields="[[detailFIelds]]"
+        is-selector>
+      </things-card-image-list>
+
+      <iron-scroll-threshold
+        id="scroller"
+        scroll-target="card-list"
+        on-lower-threshold="goNextPage">
+      </iron-scroll-threshold>
     </paper-dialog>
   </template>
   <script>
@@ -146,7 +160,7 @@
          */
         resourceUrl: {
           type: String,
-          value: 'attachments'
+          value: 'attachments/list/image'
         },
 
         /**
@@ -170,7 +184,7 @@
          */
         limit: {
           type: Number,
-          value: 10
+          value: 20
         },
 
         /**
@@ -185,7 +199,10 @@
          * image가 아닌 파일들을 필터링한 후 초기화 하는 items object
          */
         newItems: {
-          type: Object
+          type: Array,
+          value: function() {
+            return [];
+          }
         },
 
         /**
@@ -206,8 +223,8 @@
       },
 
       listeners: {
-        //image 클릭시 발생하는 이벤트 listener
-        'things-card-image-selected' : '_onImageSelected'
+        'things-card-image-selected' : '_onImageSelected',
+        'scroller.lower-threshold':'goNextPage'
       },
 
       /**
@@ -224,51 +241,34 @@
        * ajax 호출을 통해 받은 lastResponse에서 image 파일이 아닌 것들을 filltering
        */
       _responseChanged: function(lastResponse) {
-        var tempItems = lastResponse.items;
-
-        for(var i = 0; i < tempItems.length; i++) {
-          // mimetype이 없을 경우 파일명을 split하고 확장자를 추출하여 filltering
-          if(!tempItems[i].mimetype) {
-            var fileNameArr = tempItems[i].name.split(".");
-            var fileExtention = fileNameArr[1];
-
-            if(fileExtention == 'csv' || fileExtention == 'xlsx' || fileExtention == 'html') {
-              tempItems.splice(i, 1);
-              i--;
-            } else {
-              //things-card-image-list에 attachemnt_id를 받게 되어 있어서 해당 item의 id를 attachment_id로 초기화 
-              tempItems[i].attachment_id = tempItems[i].id;
-            }
-            // mimetype이 있을 경우의 filltering
-          } else if (tempItems[i].mimetype == 'csv' || tempItems[i].mimetype == 'xlsx' || tempItems[i].mimetype == 'html') {
-            tempItems.splice(i, 1);
-            i--;
-          } else {
-            tempItems[i].attachment_id = tempItems[i].id;
-          }
-        }
-
-        this.newItems = tempItems;
-        this.totalCount = lastResponse.total;
+        var newItems = lastResponse && lastResponse.items ? lastResponse.items : [];
+        this.totalCount = lastResponse && lastResponse.total ? lastResponse.total : this.newItems.length;
+        newItems.forEach(function(item) { item.attachment_id = item.id; });
+        this.newItems = this.newItems.concat(newItems);
       },
 
       /**
        * 버튼 클릭시 image selector dialog toggle
        */
       toggleImageSelector: function() {
+        this.$['attachment-search'].generateRequest();
         this.$['dialog'].open();
       },
 
       /**
        * 다음 페이지 이동
        */
-      goNextPage: function(e) {
-        if(totalCount == 0) return;
+      goNextPage: function() {
+        if(this.totalCount == 0){
+          this.$.scroller.clearTriggers();
+          return;
+        }
 
-        if((this.page * limit) <= totalCount) {
+        if((this.page * this.limit) < this.totalCount) {
           this.page = this.page + 1;
           this.$['attachment-search'].generateRequest();
         }
+        this.$.scroller.clearTriggers();
       },
 
       /**
