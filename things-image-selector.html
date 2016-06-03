@@ -98,8 +98,12 @@
         id="attachment-search"
         method="GET"
         resource-url="[[resourceUrl]]"
+        resource-action="index" 
+        page="[[page]]" 
+        limit="[[limit]]"
         last-response="{{lastResponse}}">
       </things-ajax>
+
       <paper-dialog-scrollable>
         <things-card-image-list
           items="[[newItems]]"
@@ -143,6 +147,30 @@
         resourceUrl: {
           type: String,
           value: 'attachments'
+        },
+
+        /**
+         * 총 페이지 수
+         */
+        totalCount: {
+          type: Number,
+          value: 0
+        },
+
+        /**
+         * 현재 페이지
+         */
+        page: {
+          type: Number,
+          value: 1
+        },
+
+        /**
+         * 한 페이지 당 보여질 레코드 수 
+         */
+        limit: {
+          type: Number,
+          value: 10
         },
 
         /**
@@ -221,6 +249,7 @@
         }
 
         this.newItems = tempItems;
+        this.totalCount = lastResponse.total;
       },
 
       /**
@@ -228,6 +257,18 @@
        */
       toggleImageSelector: function() {
         this.$['dialog'].open();
+      },
+
+      /**
+       * 다음 페이지 이동
+       */
+      goNextPage: function(e) {
+        if(totalCount == 0) return;
+
+        if((this.page * limit) <= totalCount) {
+          this.page = this.page + 1;
+          this.$['attachment-search'].generateRequest();
+        }
       },
 
       /**
