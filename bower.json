@@ -1,6 +1,6 @@
 {
   "name": "things-image-selector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     "Hatio Lab. <heartyoh@hatiolab.com>"
   ],
@@ -19,6 +19,14 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
+    "iron-input": "PolymerElements/iron-input#^1.0.10",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.8",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.1.1",
+    "paper-dialog": "PolymerElements/paper-dialog#^1.0.4",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.4",
+    "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
+    "things-ajax": "ThingsElements/things-ajax",
+    "things-card-image": "ThingsElements/things-card-image"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
