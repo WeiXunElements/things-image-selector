@@ -1,0 +1,242 @@
+<link ref="import" href="../polymer/polymer.html">
+<link ref="import" href="../iron-input/iron-input.html">
+<link ref="import" href="../paper-icon-button/paper-icon-button.html">
+<link ref="import" href="../iron-icon/iron-icon.html">
+<link ref="import" href="../paper-dialog/paper-dialog.html">
+<link ref="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link ref="import" href="../paper-toolbar/paper-toobar.html">
+<link ref="import" href="../things-ajax/things-ajax.html">
+<link ref="import" href="../things-card-image/things-card-image-list.html">
+
+<!--
+`<things-image-selector>` Things Image Selector
+
+  Example
+    
+    <things-image-selector
+      resource-url="attachments">
+    </things-image-selector>
+
+@demo demo/index.html
+-->
+<dom-module id="things-image-selector">
+  <style>
+    label{
+      @apply(--things-label);
+    }
+    input{
+      @apply(--things-input);
+      width:calc(65% - 37px);
+    }
+    paper-icon-button{
+      @apply(--things-small-icon);
+      margin-right:7px;margin-left:-27px;
+      opacity:.4;
+      position:relative;
+      top:-2px;
+    }
+    iron-icon{
+      @apply(--things-picker-button);
+      background:url(/images/icon-resource-select.png) 50% 3px no-repeat var(--paper-blue-grey-300);
+    }
+    paper-toolbar{
+      background-color:var(--things-primary-background-color);
+      height:45px;
+      margin-top:0px !important;
+      @apply(--things-padding-clear)
+    }
+    paper-toolbar::shadow #topBar{
+      height:45px;
+    }
+    paper-toolbar::shadow #bottomBar {
+      height: 45px;
+      @apply(--layout-horizontal);
+      @apply(--layout-end-justified);
+      padding: 0 10px;
+    }      
+    paper-toolbar .title{
+      margin-left:32px !important;
+      line-height:initial !important;
+    }
+    form{
+      @apply(--things-default-padding);
+      padding-bottom:5px;
+      border-bottom:1px solid rgba(0,0,0,.1);
+    }
+    paper-fab{
+      @apply(--things-search-fab);
+    }
+    .close-btn{
+      @apply(--things-header-button);
+      background:url(/images/icon-close.png) 100% 50% no-repeat;
+      margin-right:10px;
+    }
+  </style>
+  <template>
+    <input is="iron-input" name="[[name]]" bind-value="[[value]]" hidden>
+    
+    <label>[[label]]</label>
+    <input is="iron-input" bind-value="[[display]]" readonly>
+    <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear">
+    </paper-icon-button>
+    <iron-icon prefix on-tap="toggleImageSelector"></iron-icon>
+
+    <paper-dialog
+      id="dialog"
+      entry-animation="scale-up-animation"
+      exit-animation="fade-out-animation"
+      modal>
+      <paper-toolbar>
+        <span class="title">[[title]]</span>
+        <div class="buttonsGroup">
+          <button dialog-dismiss class="close-btn"></button>
+        </div>
+      </paper-toolbar>
+
+      <things-ajax
+        auto
+        id="attachment-search"
+        method="GET"
+        resource-url="[[resourceUrl]]"
+        last-response="{{lastResponse}}">
+      </things-ajax>
+      <paper-dialog-scrollable>
+        <things-card-image-list
+          items="[[newItems]]"
+          detail-fields="[[detailFIelds]]"
+          is-selector>
+        </things-card-image-list>
+      </paper-dialog-scrollable>
+    </paper-dialog>
+  </template>
+  <script>
+    Polymer({
+      is: 'things-image-selector',
+
+      properties: {
+        
+        /**
+         * selector field 앞에 붙는 label property
+         */
+        label: {
+          type: String
+        },
+
+        /**
+         * image 선택시 field에 mapping 되는 display property
+         */
+        display: {
+          type: String
+        },
+
+        /**
+         * selector dialog 상단에 표기 되는 title
+         */
+        title: {
+          type: String,
+          value: 'Image Selector'
+        },
+
+        /**
+         * image objects를 호출할 resource url
+         */
+        resourceUrl: {
+          type: String,
+          value: 'attachments'
+        },
+
+        /**
+         * ajax 호출을 통해 받는 response
+         */
+        lastResponse: {
+          type: Object,
+          observer: '_responseChanged'
+        },
+
+        /**
+         * image가 아닌 파일들을 필터링한 후 초기화 하는 items object
+         */
+        newItems: {
+          type: Object
+        },
+
+        /**
+         * detail form field에 mapping 시킬 data 목록들로 빈간이 없이 ','로 구분하여 입력합니다.
+         * ex) name,description,file_size
+         */
+        detailFIelds: {
+          type: String,
+          value: 'file_size'
+        },
+
+        /**
+         * 선택한 이미지의 metaData가 담겨 있는 Object
+         */
+        metaData: {
+          type: Object
+        }
+      },
+
+      listeners: {
+        //image 클릭시 발생하는 이벤트 listener
+        'things-card-image-selected' : '_onImageSelected'
+      },
+
+      /**
+       * dialog에서 image를 클릭하면 display에 name을 metaData에 Obj형태의 detail 정보를 담고
+       * dialog를 닫습니다.
+       */
+      _onImageSelected: function(e) {
+        this.display = e.detail.name;
+        this.metaData = e.detail;
+        this.$['dialog'].close();
+      },
+
+      /**
+       * ajax 호출을 통해 받은 lastResponse에서 image 파일이 아닌 것들을 filltering
+       */
+      _responseChanged: function(lastResponse) {
+        var tempItems = lastResponse.items;
+
+        for(var i = 0; i < tempItems.length; i++) {
+          // mimetype이 없을 경우 파일명을 split하고 확장자를 추출하여 filltering
+          if(!tempItems[i].mimetype) {
+            var fileNameArr = tempItems[i].name.split(".");
+            var fileExtention = fileNameArr[1];
+
+            if(fileExtention == 'csv' || fileExtention == 'xlsx' || fileExtention == 'html') {
+              tempItems.splice(i, 1);
+              i--;
+            } else {
+              //things-card-image-list에 attachemnt_id를 받게 되어 있어서 해당 item의 id를 attachment_id로 초기화 
+              tempItems[i].attachment_id = tempItems[i].id;
+            }
+            // mimetype이 있을 경우의 filltering
+          } else if (tempItems[i].mimetype == 'csv' || tempItems[i].mimetype == 'xlsx' || tempItems[i].mimetype == 'html') {
+            tempItems.splice(i, 1);
+            i--;
+          } else {
+            tempItems[i].attachment_id = tempItems[i].id;
+          }
+        }
+
+        this.newItems = tempItems;
+      },
+
+      /**
+       * 버튼 클릭시 image selector dialog toggle
+       */
+      toggleImageSelector: function() {
+        this.$['dialog'].open();
+      },
+
+      /**
+       * 선택한 이미지의 정보들을 삭제 합니다.
+       */
+      clearValue: function() {
+        this.display = '';
+        this.metaData = '';
+      }
+    });
+  </script>
+</dom-module>
