@@ -112,7 +112,6 @@
       <paper-toolbar>
         <span class="title">[[title]]</span>
         <div class="buttonsGroup">
-          <things-button on-tap="toggleFileUpload"></things-button>
           <button dialog-dismiss class="close-btn"></button>
         </div>
       </paper-toolbar>
@@ -132,6 +131,9 @@
         scroll-target="card-list"
         on-lower-threshold="goNextPage">
       </iron-scroll-threshold>
+
+      <things-button on-tap="refreshImages">Refresh</things-button>
+      <things-button on-tap="toggleFileUpload">Upload</things-button>
     </paper-dialog>
   </template>
   <script>
@@ -308,7 +310,8 @@
         var newItems = lastResponse && lastResponse.items ? lastResponse.items : [];
         this.totalCount = lastResponse && lastResponse.total ? lastResponse.total : this.newItems.length;
         newItems.forEach(function(item) { item.attachment_id = item.id; });
-        this.newItems = this.newItems.concat(newItems);
+        
+        this.newItems = (this.page == 1) ? newItems : this.newItems.concat(newItems);
       },
 
       /**
@@ -321,6 +324,14 @@
 
         this.$['attachment-search'].generateRequest();
         this.$['dialog'].open();
+      },
+
+      /**
+       * 셀렉터에 출력된 이미지를 refresh하는 버튼
+       */
+      refreshImages: function() {
+        this.page = 1;
+        this.$['attachment-search'].generateRequest();
       },
 
       /**
