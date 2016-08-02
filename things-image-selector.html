@@ -8,6 +8,7 @@
 <link ref="import" href="../things-ajax/things-ajax.html">
 <link ref="import" href="../things-card-image/things-card-image-list.html">
 <link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
+<link rel="import" href="../things-global-behavior/things-global-behavior.html">
 
 <!--
 `<things-image-selector>` Things Image Selector
@@ -131,6 +132,10 @@
     Polymer({
       is: 'things-image-selector',
 
+      behaviors: [
+        Things.GlobalBehavior
+      ],      
+
       properties: {
         
         /**
@@ -228,6 +233,21 @@
         displayField: {
           type: String,
           value: 'name'
+        },
+
+        /**
+         * input field에 full url을 표시할지 여부를 결정 합니다.
+         */
+        displayFullUrl: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * baseUrl을 변수화 하기 위해 사용하는 property
+         */
+        baseUrlAlias: {
+          type: String
         }
       },
 
@@ -241,8 +261,19 @@
        * dialog를 닫습니다.
        */
       _onImageSelected: function(e) {
-        this.display = e.detail.name;
+        var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
+
+        var tempDisplay = e.detail[this.displayField];
+
+        this.display = (this.displayFullUrl) ? (baseUrl + '/download/' + tempDisplay) : tempDisplay;
+        e.detail.display = this.display;
+        
+        // this.display = e.detail[this.displayField];
         this.metaData = e.detail;
+
+        // things-image-selector에서 가지고 있는 데이터를 다른 컴퍼넌트로 보내기 위한 이벤트
+        this.fire('things-image-selected', e.detail);
+        
         this.$['dialog'].close();
       },
 
