@@ -9,6 +9,8 @@
 <link ref="import" href="../things-card-image/things-card-image-list.html">
 <link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
 <link rel="import" href="../things-global-behavior/things-global-behavior.html">
+<link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
+<link rel="import" href="../things-upload/things-file-upload.html">
 
 <!--
 `<things-image-selector>` Things Image Selector
@@ -90,6 +92,18 @@
     </paper-icon-button>
     <iron-icon prefix on-tap="toggleImageSelector"></iron-icon>
 
+    <things-ajax
+      id="attachment-search"
+      method="GET"
+      resource-url="[[resourceUrl]]"
+      resource-action="index" 
+      page="[[page]]" 
+      limit="[[limit]]"
+      sort-fields="[[sortFields]]"
+      loading="{{loading}}"
+      last-response="{{lastResponse}}">
+    </things-ajax>
+
     <paper-dialog
       id="dialog"
       entry-animation="scale-up-animation"
@@ -98,20 +112,10 @@
       <paper-toolbar>
         <span class="title">[[title]]</span>
         <div class="buttonsGroup">
+          <things-button on-tap="toggleFileUpload"></things-button>
           <button dialog-dismiss class="close-btn"></button>
         </div>
       </paper-toolbar>
-
-      <things-ajax
-        id="attachment-search"
-        method="GET"
-        resource-url="[[resourceUrl]]"
-        resource-action="index" 
-        page="[[page]]" 
-        limit="[[limit]]"
-        loading ="{{loading}}"
-        last-response="{{lastResponse}}">
-      </things-ajax>
 
       <things-card-image-list
         id="card-list"
@@ -135,7 +139,8 @@
       is: 'things-image-selector',
 
       behaviors: [
-        Things.GlobalBehavior
+        Things.GlobalBehavior,
+        Things.ViewOpenBehavior
       ],      
 
       properties: {
@@ -191,7 +196,7 @@
          */
         limit: {
           type: Number,
-          value: 20
+          value: 50
         },
 
         /**
@@ -250,6 +255,23 @@
          */
         baseUrlAlias: {
           type: String
+        },
+
+        /**
+         * storage를 초기에 설정하기 위한 property
+         */
+        defaultUploadStorage: {
+          type: String
+        },
+
+        /**
+         * ajax sorting field
+         */
+        sortFields: {
+          type: Array,
+          value: function() {
+            return [ { field: 'created_at', ascending: false } ];
+          }
         }
       },
 
@@ -293,8 +315,26 @@
        * 버튼 클릭시 image selector dialog toggle
        */
       toggleImageSelector: function() {
+        if(this.newItems && this.newItems.length > 0) {
+          this.newItems = [];
+        }
+
         this.$['attachment-search'].generateRequest();
         this.$['dialog'].open();
+      },
+
+      /**
+       * 버튼 클릭시 upload dialog toggle
+       */
+      toggleFileUpload: function() {
+        var upload = document.createElement('things-file-upload');
+        upload.id = 'file-upload';
+        upload.target = 'upload';
+        upload.method = 'POST';
+        upload.timeout = 300000;
+        upload.hidden = false;
+        upload.defaultStorage = this.defaultUploadStorage;
+        this.openPopupView(upload, true);
       },
 
       /**
