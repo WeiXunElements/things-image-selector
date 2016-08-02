@@ -158,7 +158,8 @@
          * image 선택시 field에 mapping 되는 display property
          */
         display: {
-          type: String
+          type: String,
+          observer: '_displayChanged'
         },
 
         /**
@@ -312,9 +313,6 @@
         
         // this.display = e.detail[this.displayField];
         this.metaData = e.detail;
-
-        // things-image-selector에서 가지고 있는 데이터를 다른 컴퍼넌트로 보내기 위한 이벤트
-        this.fire('things-image-selected', e.detail);
         
         this.$['dialog'].close();
       },
@@ -329,6 +327,13 @@
         
         this.newItems = (this.page == 1) ? newItems : this.newItems.concat(newItems);
       },
+
+      /**
+       * display 값이 변경 되었을때 발생하는 이벤트
+       */
+      _displayChanged: function(display) {
+        this.fire('things-display-changed', display);
+      },      
 
       /**
        * 버튼 클릭시 image selector dialog toggle
@@ -387,6 +392,7 @@
         this.display = '';
         this.metaData = '';
       }
+
     });
   </script>
 </dom-module>
