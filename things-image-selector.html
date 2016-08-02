@@ -116,7 +116,7 @@
         id="card-list"
         class="container"
         items="[[newItems]]"
-        detail-fields="[[detailFIelds]]"
+        detail-fields="[[detailFields]]"
         is-selector>
       </things-card-image-list>
 
@@ -209,7 +209,7 @@
          * detail form field에 mapping 시킬 data 목록들로 빈간이 없이 ','로 구분하여 입력합니다.
          * ex) name,description,file_size
          */
-        detailFIelds: {
+        detailFields: {
           type: String,
           value: 'file_size'
         },
@@ -219,6 +219,15 @@
          */
         metaData: {
           type: Object
+        },
+
+        /**
+         * input field에 표시할 field 값을 선택 합니다.
+         * 기본값은 name 필드
+         */
+        displayField: {
+          type: String,
+          value: 'name'
         }
       },
 
