@@ -83,11 +83,9 @@
       overflow-y: auto;
     }    
   </style>
-  <template>
-    <input is="iron-input" name="[[name]]" bind-value="[[value]]" hidden>
-    
+  <template>    
     <label>[[label]]</label>
-    <input is="iron-input" bind-value="[[display]]" readonly>
+    <input is="iron-input" bind-value="[[value]]" readonly>
     <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear">
     </paper-icon-button>
     <iron-icon prefix on-tap="toggleImageSelector"></iron-icon>
@@ -155,11 +153,11 @@
         },
 
         /**
-         * image 선택시 field에 mapping 되는 display property
+         * image 선택시 field에 mapping 되는 value property
          */
-        display: {
+        value: {
           type: String,
-          observer: '_displayChanged'
+          observer: '_valueChanged'
         },
 
         /**
@@ -300,18 +298,16 @@
       },
 
       /**
-       * dialog에서 image를 클릭하면 display에 name을 metaData에 Obj형태의 detail 정보를 담고
-       * dialog를 닫습니다.
+       * dialog에서 image를 클릭하면 value와 metaData에 Obj형태의 detail 정보를 담는다.
+       * 만약 displayField가 정의 되었다면 detail에서 해당 필드 값을 value에 초기화 함 (기본값은 name)
        */
       _onImageSelected: function(e) {
         var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
+        var tempValue = e.detail[this.displayField];
 
-        var tempDisplay = e.detail[this.displayField];
-
-        this.display = (this.displayFullUrl) ? (baseUrl + '/download/' + tempDisplay) : tempDisplay;
-        e.detail.display = this.display;
+        this.value = (this.displayFullUrl) ? (baseUrl + '/download/' + tempValue) : tempValue;
         
-        // this.display = e.detail[this.displayField];
+        e.detail.value = this.value;
         this.metaData = e.detail;
         
         this.$['dialog'].close();
@@ -329,10 +325,10 @@
       },
 
       /**
-       * display 값이 변경 되었을때 발생하는 이벤트
+       * value 값이 변경 되었을때 발생하는 이벤트
        */
-      _displayChanged: function(display) {
-        this.fire('things-display-changed', display);
+      _valueChanged: function(value) {
+        this.fire('things-value-changed', value);
       },      
 
       /**
@@ -389,7 +385,7 @@
        * 선택한 이미지의 정보들을 삭제 합니다.
        */
       clearValue: function() {
-        this.display = '';
+        this.value = '';
         this.metaData = '';
       }
 
