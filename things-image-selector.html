@@ -109,7 +109,6 @@
 
     <things-ajax
       id="default-storage" 
-      resource-url="storage_infos/show_by_name"
       resource-action="get">
     </things-ajax>  
 
@@ -161,8 +160,7 @@
 
       <paper-toolbar>
         <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]">Upload</things-button>
-      </paper-toolbar>      
-
+      </paper-toolbar>
 
     </paper-dialog>
   </template>
@@ -413,8 +411,9 @@
           this.newItems = [];
         }
 
+        this.defaultStorage = '';
+        this.defaultStorage = this.globals.defaultImageStorage;
         this.$['dialog'].open();
-        this.refreshImages();
       },
 
       /**
@@ -422,14 +421,13 @@
        */
       refreshImages: function() {
         this.page = 1;
+        var searchName = this.searchName;
+        var searchStorage = this.searchStorage;
+        var filters = [];
 
         if(this.newItems && this.newItems.length > 0) {
           this.newItems = [];
         }
-        
-        var searchName = this.searchName;
-        var searchStorage = this.searchStorage;
-        var filters = [];
 
         if(searchName) {
           filters.push({
@@ -502,8 +500,8 @@
        */
       _defaultStorageChanged: function(defaultStorage) {
         if(defaultStorage) {
-          this.$['default-storage'].resourceUrl = this.$['default-storage'].resourceUrl + '?name=' + defaultStorage;
-          this.$['default-storage'].generateRequest();    
+          this.$['default-storage'].resourceUrl = 'storage_infos/show_by_name?name=' + defaultStorage;
+          this.$['default-storage'].generateRequest();
         }
       },
 
@@ -512,6 +510,7 @@
        */
       _defaultStorageValueChanged: function(e) {
         this.searchStorage = e.detail.id;
+        this.refreshImages();
       }
     });
   </script>
