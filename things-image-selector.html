@@ -25,6 +25,10 @@
 -->
 <dom-module id="things-image-selector">
   <style>
+    :host {
+      display: block;
+      background-color:var(--things-whitegrey-background-color);
+    }
     label{
       @apply(--things-label);
     }
@@ -98,9 +102,16 @@
       page="[[page]]" 
       limit="[[limit]]"
       sort-fields="[[sortFields]]"
+      query-fields="[[queryFields]]"
       loading="{{loading}}"
       last-response="{{lastResponse}}">
     </things-ajax>
+
+    <things-ajax
+      id="default-storage" 
+      resource-url="storage_infos/show_by_name"
+      resource-action="get">
+    </things-ajax>  
 
     <paper-dialog
       id="dialog"
@@ -112,11 +123,29 @@
         <div class="buttonsGroup">
           <button dialog-dismiss class="close-btn"></button>
         </div>
-      </paper-toolbar>
+      </paper-toolbar>     
+
+      <paper-material elevation="0" on-keypress="handleKeyPress">
+        <div class="layout vertical flex">
+          <form is="iron-form"
+                action="[[action]]"
+                content-type="[[contentType]]"
+                last-response ="{{lastResponse}}"
+                with-credentials="[[withCredentials]]">
+            <div id="fields" class="layout vertical flex">
+              <div class="layout horizontal flex">
+                <things-input-field label="Name" value="{{searchName}}"></things-input-field>
+                <things-storage-combo label="Storage" query-fields="[[storageFilters]]"></things-storage-combo>
+              </div>
+            </div>
+            <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
+          </form>
+        </div>
+      </paper-material>      
 
       <things-card-image-list
         id="card-list"
-        class="container"
+        class="container flex"
         items="[[newItems]]"
         image-field="id"
         detail-fields="[[detailFields]]"
@@ -130,8 +159,11 @@
         on-lower-threshold="goNextPage">
       </iron-scroll-threshold>
 
-      <things-button on-tap="refreshImages" hidden="[[!useUpload]]">Refresh</things-button>
-      <things-button on-tap="toggleFileUpload" hidden="[[!useRefresh]]">Upload</things-button>
+      <paper-toolbar>
+        <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]">Upload</things-button>
+      </paper-toolbar>      
+
+
     </paper-dialog>
   </template>
   <script>
@@ -261,8 +293,9 @@
         /**
          * storage를 초기에 설정하기 위한 property
          */
-        defaultUploadStorage: {
-          type: String
+        defaultStorage: {
+          type: String,
+          observer: '_defaultStorageChanged'
         },
 
         /**
@@ -276,6 +309,21 @@
         },
 
         /**
+         * 이름으로 검색 할 때 추가되는 검색 조건
+         */
+        queryFields: {
+          type: Array,
+          value: []
+        },
+
+        /**
+         * storage combo를 통해 검색 조건을 설정하기 위한 property
+         */
+        storageFilters: {
+          type: Array
+        },
+
+        /**
          * upload 버튼 활성화 여부
          */
         useUpload: {
@@ -284,17 +332,25 @@
         },
 
         /**
-         * refresh 버튼 활성화 여부
+         * 검색 조건에 쓰일 name 
          */
-        useRefresh: {
-          type: Boolean,
-          value: false
+        searchName: {
+          type: String
+        },
+
+        /**
+         * 검색 조건에 쓰일 storage
+         */
+        searchStorage: {
+          type: String
         }
       },
 
       listeners: {
         'things-card-image-selected' : '_onImageSelected',
-        'scroller.lower-threshold':'goNextPage'
+        'scroller.lower-threshold':'goNextPage',
+        'things-combo-value-changed': 'storageChanged',
+        'default-storage.things-ajax-response': '_defaultStorageValueChanged'
       },
 
       /**
@@ -329,7 +385,25 @@
        */
       _valueChanged: function(value) {
         this.fire('things-value-changed', value);
-      },      
+      },
+
+      /**
+       * search btn tap event
+       */
+      _onSearchFormTap: function() {
+        this.refreshImages();
+      },
+
+      /**
+       * storage combo에서 값변경시 
+       */
+      storageChanged: function(event) {
+        if(event.detail.value && typeof(event.detail.value) == 'number') {
+          this.searchStorage = event.detail.value;
+        } else if (event.detail.item && event.detail.item.id) {
+          this.searchStorage = event.detail.item.id;
+        }
+      },
 
       /**
        * 버튼 클릭시 image selector dialog toggle
@@ -339,8 +413,8 @@
           this.newItems = [];
         }
 
-        this.$['attachment-search'].generateRequest();
         this.$['dialog'].open();
+        this.refreshImages();
       },
 
       /**
@@ -348,6 +422,31 @@
        */
       refreshImages: function() {
         this.page = 1;
+
+        if(this.newItems && this.newItems.length > 0) {
+          this.newItems = [];
+        }
+        
+        var searchName = this.searchName;
+        var searchStorage = this.searchStorage;
+        var filters = [];
+
+        if(searchName) {
+          filters.push({
+            name: 'name',
+            operator: 'contains',
+            value: searchName
+          });
+        } 
+
+        if(searchStorage) {
+          filters.push({
+            name: 'storage_info_id',
+            value: searchStorage
+          });
+        }
+
+        this.queryFields = filters;
         this.$['attachment-search'].generateRequest();
       },
 
@@ -361,7 +460,7 @@
         upload.method = 'POST';
         upload.timeout = 300000;
         upload.hidden = false;
-        upload.defaultStorage = this.defaultUploadStorage;
+        upload.defaultStorage = this.defaultStorage;
         this.openPopupView(upload, true);
       },
 
@@ -387,8 +486,33 @@
       clearValue: function() {
         this.value = '';
         this.metaData = '';
-      }
+      },
 
+      /**
+       * enter 입력시 
+       */
+      handleKeyPress: function(e) {
+        if(e.charCode == 13) {
+          this._onSearchFormTap();
+        }
+      },
+
+      /**
+       * 전달받은 defaultStorage를 이용하여 ajax 호출 합니다.
+       */
+      _defaultStorageChanged: function(defaultStorage) {
+        if(defaultStorage) {
+          this.$['default-storage'].resourceUrl = this.$['default-storage'].resourceUrl + '?name=' + defaultStorage;
+          this.$['default-storage'].generateRequest();    
+        }
+      },
+
+      /**
+       * ajax 호출 listner로 response를 통해 storage의 값들을 초기화 합니다.
+       */
+      _defaultStorageValueChanged: function(e) {
+        this.searchStorage = e.detail.id;
+      }
     });
   </script>
 </dom-module>
