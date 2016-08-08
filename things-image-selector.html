@@ -57,6 +57,12 @@
     @apply(--layout-flex);
     @apply(--layout-vertical);
     }
+    paper-dialog::shadow .toolbar-tools.paper-toolbar{
+      padding:0
+    }
+    paper-dialog::shadow span.title.things-image-selector{
+      margin-left:15px !important
+    }
     paper-toolbar{
       background-color:var(--things-primary-background-color);
       height:45px;
@@ -65,7 +71,7 @@
     }
     paper-toolbar::shadow #topBar{
       height:45px;
-    } 
+    }
     paper-toolbar .title{
       margin-left:32px !important;
       line-height:initial !important;
@@ -85,7 +91,26 @@
     }
     .container {
       overflow-y: auto;
-    }    
+    }
+    paper-material{
+      background-color:#f6f6f6;
+      margin:0;
+      padding:15px 10px 3px 0;
+      border-bottom:1px solid rgba(0,0,0,.1);
+    }
+    paper-material::shadow things-combo iron-icon{
+      top:-3px;
+      width:26px;
+      -webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;
+    }
+    iron-scroll-threshold+paper-toolbar{
+      background-color:transparent;
+      margin-bottom:5px;
+    }
+    iron-scroll-threshold+paper-toolbar::shadow #topBar{
+      float:right;
+      margin-right:9px
+    }
   </style>
   <template>    
     <label>[[label]]</label>
