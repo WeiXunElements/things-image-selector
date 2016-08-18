@@ -161,7 +161,7 @@
                         <div id="fields" class="layout vertical flex">
                             <div class="layout horizontal flex">
                                 <things-input-field label="Name" value="{{searchName}}"></things-input-field>
-                                <things-storage-combo label="Storage" query-fields="[[storageFilters]]"></things-storage-combo>
+                                <things-storage-combo label="Storage" items ="{{searchStorageArray}}" query-fields="[[storageFilters]]" hidden="[[useDefaultStorage]]"></things-storage-combo>
                             </div>
                         </div>
                         <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
@@ -377,7 +377,22 @@
                 'default-storage.things-ajax-response': '_defaultStorageValueChanged',
                 'dialog.iron-overlay-opened': 'refreshImages'
             },
-
+            observers: [
+                'onSearchStorageArrayChange(searchStorageArray)'
+            ],
+            /**
+             * searchStorage Array를 받아 와서 String으로 바꾸어 searchStorage에 설정한다.
+             */
+            onSearchStorageArrayChange: function(searchStorageArray){
+                var StorageArr = searchStorageArray.map(function(storage){
+                    if(storage)return storage.id;
+                });
+                var storages = JSON.stringify(StorageArr);
+                storages = storages.replace('null,','');
+                storages = storages.replace('[','');
+                storages = storages.replace(']','');
+                this.searchStorage = storages
+            },
             /**
              * dialog에서 image를 클릭하면 value와 metaData에 Obj형태의 detail 정보를 담는다.
              * 만약 displayField가 정의 되었다면 detail에서 해당 필드 값을 value에 초기화 함 (기본값은 name)
@@ -475,6 +490,7 @@
                 if (searchStorage) {
                     filters.push({
                         name: 'storage_info_id',
+                        operator: 'in',
                         value: searchStorage
                     });
                 }
