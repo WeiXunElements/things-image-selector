@@ -367,6 +367,20 @@
                  */
                 searchStorage: {
                     type: String
+                },
+
+                /**
+                 * 그리드에서 호출 시 callback 함수
+                 */
+                callback: {
+                    type: Function
+                },
+
+                /**
+                 * 그리드에서 호출시 그리드의 메타 데이터
+                 */
+                dataObj: {
+                    type: Object
                 }
             },
 
@@ -405,6 +419,13 @@
 
                 e.detail.value = this.value;
                 this.metaData = e.detail;
+
+                if(this.dataObj) {
+                    this.dataObj['value'] = this.metaData.id;
+                    if(this.callback) {
+                        this.callback.apply(this.dataObj.owner, [this.dataObj]);
+                    }
+                }
 
                 this.$['dialog'].close();
             },
@@ -450,7 +471,15 @@
             /**
              * 버튼 클릭시 image selector dialog toggle
              */
-            toggleImageSelector: function() {
+            toggleImageSelector: function(dataObj, callback) {
+                this.dataObj = '';
+                this.callback = '';
+
+                if(callback && dataObj) {
+                    this.callback = callback;
+                    this.dataObj = dataObj;
+                }
+
                 if (this.newItems && this.newItems.length > 0) {
                     this.newItems = [];
                 }
