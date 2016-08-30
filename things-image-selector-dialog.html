@@ -1,0 +1,521 @@
+<link ref="import" href="../polymer/polymer.html">
+<link ref="import" href="../paper-dialog/paper-dialog.html">
+<link ref="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link ref="import" href="../paper-toolbar/paper-toobar.html">
+<link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
+
+<link ref="import" href="../things-ajax/things-ajax.html">
+<link ref="import" href="../things-i18n-msg/things-i18n-msg.html">
+<link ref="import" href="../things-card-image/things-card-image-list.html">
+<link rel="import" href="../things-global-behavior/things-global-behavior.html">
+<link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
+<link rel="import" href="../things-upload/things-file-upload.html">
+
+<dom-module id="things-image-selector-dialog">
+	<template>
+    <style>
+      :host {
+        display: block;
+        background-color: var(--things-whitegrey-background-color);
+      }    
+      paper-dialog {
+        position: fixed;
+        top: 10%;
+        bottom: 10%;
+        left: 15%;
+        right: 15%;
+        margin: 0px;
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+      }
+      paper-dialog::shadow .toolbar-tools.paper-toolbar {
+        padding: 0 
+      }
+      paper-dialog::shadow span.title.things-image-selector {
+        margin-left: 15px !important
+      }
+      paper-toolbar {
+        background-color: var(--things-primary-background-color);
+        height: 45px;
+        margin-top: 0px !important;
+        @apply(--things-padding-clear)
+      }
+      paper-toolbar::shadow #topBar {
+        height: 45px;
+      }
+      paper-toolbar .title {
+        margin-left: 32px !important;
+        line-height: initial !important;
+      }
+      fixedorm {
+        @apply(--things-default-padding);
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(0, 0, 0, .1);
+      }
+      paper-fab {
+        @apply(--things-search-fab);
+      }
+      .close-btn {
+       @apply(--things-header-button);
+        background: url(/images/icon-close.png) 100% 50% no-repeat;
+        margin-right: 10px;
+      }
+      .container {
+        overflow-y: auto;
+      }
+      paper-material {
+        background-color: #f6f6f6;
+        margin: 0;
+        padding: 15px 10px 3px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, .1);
+      }
+      paper-material::shadow things-combo iron-icon {
+        top: -3px;
+        width: 26px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+      }
+      iron-scroll-threshold+paper-toolbar {
+        background-color: transparent;
+        margin-bottom: 5px;
+      }
+      iron-scroll-threshold+paper-toolbar::shadow #topBar {
+        float: right;
+        margin-right: 9px
+      }    
+    </style>
+
+    <things-i18n-msg msgid="label.image-selector" msg="{{lImageSelector}}" auto hidden>Image Selector</things-i18n-msg>
+    <things-i18n-msg msgid="label.name" msg="{{lName}}" auto hidden>Name</things-i18n-msg>
+    <things-i18n-msg msgid="label.storage" msg="{{lStorage}}" auto hidden>Storage</things-i18n-msg>
+    <things-i18n-msg msgid="button.upload" msg="{{bUpload}}" auto hidden>Upload</things-i18n-msg>
+
+		<things-ajax
+			auto
+			id="default-storage"
+			resource-action="get">
+		</things-ajax>
+		
+		<things-ajax
+			id="attachment-search"
+			method="GET"
+			resource-url="[[resourceUrl]]"
+			resource-action="index"
+			page="[[page]]"
+			limit="[[limit]]"
+			sort-fields="[[sortFields]]"
+			query-fields="[[queryFields]]"
+			loading="{{loading}}"
+			last-response="{{lastResponse}}">
+    </things-ajax>
+
+    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
+      <paper-toolbar>
+        <span class="title">[[lImageSelector]]</span>
+        <div class="buttonsGroup">
+          <button dialog-dismiss class="close-btn"></button>
+        </div>
+      </paper-toolbar>
+
+      <paper-material elevation="0" on-keypress="handleKeyPress">
+        <div class="layout vertical flex">
+            <form is="iron-form" action="[[action]]" content-type="[[contentType]]" last-response="{{lastResponse}}" with-credentials="[[withCredentials]]">
+              <div id="fields" class="layout vertical flex">
+                <div class="layout horizontal flex">
+                  <things-input-field label="[[lName]]" value="{{searchName}}"></things-input-field>
+                  <things-storage-combo label="[[lStorage]]" items ="{{searchStorageArray}}" query-fields="[[storageFilters]]" hidden="[[useDefaultStorage]]"></things-storage-combo>
+                </div>
+              </div>
+            <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
+          </form>
+        </div>
+      </paper-material>
+
+      <things-card-image-list id="card-list" class="container flex" items="[[newItems]]" image-field="id" detail-fields="[[detailFields]]" is-selector display-full-url></things-card-image-list>
+
+      <iron-scroll-threshold id="scroller" scroll-target="card-list" on-lower-threshold="goNextPage"></iron-scroll-threshold>
+
+      <paper-toolbar>
+        <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]">[[bUpload]]</things-button>
+      </paper-toolbar>
+    </paper-dialog>
+
+        	
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'things-image-selector-dialog',
+
+      behaviors: [
+        Things.GlobalBehavior
+      ],
+
+			properties: {
+
+        /**
+         * image objects를 호출할 resource url
+         */
+        resourceUrl: {
+          type: String,
+          value: 'attachments/list/image'
+        },
+
+        /**
+         * 총 페이지 수
+         */
+        totalCount: {
+          type: Number,
+          value: 0
+        },
+
+        /**
+         * 현재 페이지
+         */
+        page: {
+          type: Number,
+          value: 1
+        },
+
+        /**
+         * 한 페이지 당 보여질 레코드 수
+         */
+        limit: {
+          type: Number,
+          value: 50
+        },
+
+        /**
+         * ajax 호출을 통해 받는 response
+         */
+        lastResponse: {
+          type: Object,
+          observer: '_responseChanged'
+        },
+
+        /**
+         * image가 아닌 파일들을 필터링한 후 초기화 하는 items object
+         */
+        newItems: {
+          type: Array,
+          value: function() {
+              return [];
+          }
+        },
+
+        /**
+         * detail form field에 mapping 시킬 data 목록들로 빈간이 없이 ','로 구분하여 입력합니다.
+         * ex) name,description,file_size
+         */
+        detailFields: {
+          type: String,
+          value: 'file_size'
+        },
+
+        /**
+         * input field에 표시할 field 값을 선택 합니다.
+         * 기본값은 name 필드
+         */
+        displayField: {
+          type: String,
+          value: 'name'
+        },
+
+        /**
+         * input field에 full url을 표시할지 여부를 결정 합니다.
+         */
+        displayFullUrl: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * baseUrl을 변수화 하기 위해 사용하는 property
+         */
+        baseUrlAlias: {
+          type: String
+        },
+
+        /**
+         * storage를 초기에 설정하기 위한 property
+         */
+        defaultStorage: {
+          type: String,
+          observer: '_defaultStorageChanged'
+        },
+
+        /**
+         * ajax sorting field
+         */
+        sortFields: {
+          type: Array,
+          value: function() {
+            return [{
+              field: 'created_at',
+              ascending: false
+            }];
+          }
+        },
+
+        /**
+         * 이름으로 검색 할 때 추가되는 검색 조건
+         */
+        queryFields: {
+          type: Array,
+          value: []
+        },
+
+        /**
+         * storage combo를 통해 검색 조건을 설정하기 위한 property
+         */
+        storageFilters: {
+          type: Array
+        },
+
+        /**
+         * upload 버튼 활성화 여부
+         */
+        useUpload: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * 검색 조건에 쓰일 name
+         */
+        searchName: {
+          type: String
+        },
+
+        /**
+         * 검색 조건에 쓰일 storage
+         */
+        searchStorage: {
+          type: String
+        },
+
+        /**
+         * 그리드에서 호출 시 callback 함수
+         */
+        callback: {
+          type: Function
+        },
+
+        /**
+         * 그리드에서 호출시 그리드의 메타 데이터
+         */
+        dataObj: {
+          type: Object
+        }
+			},
+
+      listeners: {
+        'things-card-image-selected': '_onImageSelected',
+        'scroller.lower-threshold': 'goNextPage',
+        'things-combo-value-changed': 'storageChanged',
+        'default-storage.things-ajax-response': '_defaultStorageValueChanged',
+        'dialog.iron-overlay-opened': 'refreshImages'
+      },
+      observers: [
+        'onSearchStorageArrayChange(searchStorageArray)'
+      ],
+
+      /**
+       * ajax 호출을 통해 받은 lastResponse에서 image 파일이 아닌 것들을 filltering
+       */
+      _responseChanged: function(lastResponse) {
+        var newItems = lastResponse && lastResponse.items ? lastResponse.items : [];
+        this.totalCount = lastResponse && lastResponse.total ? lastResponse.total : this.newItems.length;
+        newItems.forEach(function(item) {
+          item.attachment_id = item.id;
+        });
+
+        this.newItems = (this.page == 1) ? newItems : this.newItems.concat(newItems);
+      },
+
+      /**
+       * search btn tap event
+       */
+      _onSearchFormTap: function() {
+        this.refreshImages();
+      },
+
+      /**
+       * dialog에서 image를 클릭하면 value와 metaData에 Obj형태의 detail 정보를 담는다.
+       * 만약 displayField가 정의 되었다면 detail에서 해당 필드 값을 value에 초기화 함 (기본값은 name)
+       */
+      _onImageSelected: function(e) {
+        var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
+        var tempValue = e.detail[this.displayField];
+
+        this.value = (this.displayFullUrl) ? (baseUrl + '/download/' + tempValue) : tempValue;
+
+        e.detail.value = this.value;
+        this.metaData = e.detail;
+
+				this.dataObj['value'] = this.metaData.value;
+        this.callback.apply(this.dataObj.owner, [this.dataObj]);
+
+        this.$['dialog'].close();
+      },
+
+      /**
+       * 전달받은 defaultStorage를 이용하여 ajax 호출 합니다.
+       */
+      _defaultStorageChanged: function(defaultStorage) {
+        if (defaultStorage) {
+          this.$['default-storage'].resourceUrl = 'storage_infos/show_by_name?name=' + defaultStorage;
+        }
+      },
+
+      /**
+       * ajax 호출 listner로 response를 통해 storage의 값들을 초기화 합니다.
+       */
+      _defaultStorageValueChanged: function(e) {
+        this.searchStorage = e.detail.id;
+        this.refreshImages();
+      },      
+
+      /**
+       * searchStorage Array를 받아 와서 String으로 바꾸어 searchStorage에 설정한다.
+       */
+      onSearchStorageArrayChange: function(searchStorageArray){
+        var StorageArr = searchStorageArray.map(function(storage){
+            if(storage)return storage.id;
+        });
+        var storages = JSON.stringify(StorageArr);
+        storages = storages.replace('null,','');
+        storages = storages.replace('[','');
+        storages = storages.replace(']','');
+        this.searchStorage = storages
+      },
+
+      /**
+       * storage combo에서 값변경시
+       */
+      storageChanged: function(event) {
+        if (event.detail.value && typeof(event.detail.value) == 'number') {
+          this.searchStorage = event.detail.value;
+        } else if (event.detail.item && event.detail.item.id) {
+          this.searchStorage = event.detail.item.id;
+        }
+      },
+
+      /**
+       * 셀렉터에 출력된 이미지를 refresh하는 버튼
+       */
+      refreshImages: function() {
+        this.page = 1;
+        var searchName = this.searchName;
+        var searchStorage = this.searchStorage;
+        var filters = [];
+
+        if (this.newItems && this.newItems.length > 0) {
+          this.newItems = [];
+        }
+
+        if (searchName) {
+          filters.push({
+            name: 'name',
+            operator: 'contains',
+            value: searchName
+     	  	});
+        }
+
+        if (searchStorage) {
+          filters.push({
+            name: 'storage_info_id',
+     	    	operator: 'in',
+	          value: searchStorage
+          });
+        }
+
+        this.queryFields = filters;
+        this.$['attachment-search'].generateRequest();
+      },
+
+      /**
+       * 버튼 클릭시 upload dialog toggle
+       */
+      toggleFileUpload: function() {
+        var upload = document.createElement('things-file-upload');
+        upload.id = 'file-upload';
+        upload.target = 'upload';
+        upload.method = 'POST';
+        upload.timeout = 300000;
+        upload.hidden = false;
+        upload.defaultStorage = this.defaultStorage;
+        upload.$.storage.queryFields = this.storageFilters;
+        upload.selectorHidden = this.useDefaultStorage;
+        this.openPopupView(upload, true);
+      },
+
+      /**
+       * 다음 페이지 이동
+       */
+      goNextPage: function() {
+        if (this.totalCount == 0) {
+          this.$.scroller.clearTriggers();
+          return;
+        }
+
+        if ((this.page * this.limit) < this.totalCount) {
+          this.page = this.page + 1;
+          this.$['attachment-search'].generateRequest();
+        }
+        this.$.scroller.clearTriggers();
+      },
+
+      /**
+       * enter 입력시
+       */
+      handleKeyPress: function(e) {
+        if (e.charCode == 13) {
+          this._onSearchFormTap();
+        }
+      },
+
+      /**
+       * image selector dialog toggle
+       */
+      dialogToggle: function(dataObj, callback) {
+        this.dataObj = '';
+        this.callback = '';
+
+        this.resourceUrl = (dataObj.resourceUrl) ? dataObj.resourceUrl : this.resourceUrl;
+        this.detailFields = (dataObj.detailFields) ? dataObj.detailFields : this.detailFields;
+        this.displayField = (dataObj.displayField) ? dataObj.displayField : this.displayField;
+        this.displayFullUrl = (dataObj.displayFullUrl) ? dataObj.displayFullUrl : this.displayFullUrl;
+        this.baseUrlAlias = (dataObj.baseUrlAlias) ? dataObj.baseUrlAlias : this.baseUrlAlias;
+        this.defaultStorage = (dataObj.defaultStorage) ? dataObj.defaultStorage : this.defaultStorage;
+        this.sortFields = (dataObj.sortFields) ? dataObj.sortFields : this.sortFields;
+        this.queryFields = (dataObj.queryFields) ? dataObj.queryFields : this.queryFields;
+        this.storageFilters = (dataObj.storageFilters) ? dataObj.storageFilters : this.storageFilters;
+        this.useUpload = (dataObj.useUpload) ? dataObj.useUpload : this.useUpload;
+        this.searchName = (dataObj.searchName) ? dataObj.searchName : this.searchName;
+        this.searchStorage = (dataObj.searchStorage) ? dataObj.searchStorage : this.searchStorage;
+
+        if(callback && dataObj) {
+          this.callback = callback;
+          this.dataObj = dataObj;
+        }
+
+        if (this.newItems && this.newItems.length > 0) {
+          this.newItems = [];
+        }
+
+        if (this.defaultStorage == null) {
+          this.defaultStorage = this.globals.defaultImageStorage;
+        }
+
+        if (this.defaultStorage) {
+          this.useDefaultStorage = true;
+        }
+
+        this.$['dialog'].open();
+      }   
+		})
+	</script>
+</dom-module>
