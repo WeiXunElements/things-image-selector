@@ -12,7 +12,7 @@
 <link rel="import" href="../things-upload/things-file-upload.html">
 
 <dom-module id="things-image-selector-dialog">
-	<template>
+  <template>
     <style>
       :host {
         display: block;
@@ -91,23 +91,23 @@
     <things-i18n-msg msgid="label.storage" msg="{{lStorage}}" auto hidden>Storage</things-i18n-msg>
     <things-i18n-msg msgid="button.upload" msg="{{bUpload}}" auto hidden>Upload</things-i18n-msg>
 
-		<things-ajax
-			auto
-			id="default-storage"
-			resource-action="get">
-		</things-ajax>
-		
-		<things-ajax
-			id="attachment-search"
-			method="GET"
-			resource-url="[[resourceUrl]]"
-			resource-action="index"
-			page="[[page]]"
-			limit="[[limit]]"
-			sort-fields="[[sortFields]]"
-			query-fields="[[queryFields]]"
-			loading="{{loading}}"
-			last-response="{{lastResponse}}">
+    <things-ajax
+      auto
+      id="default-storage"
+      resource-action="get">
+    </things-ajax>
+    
+    <things-ajax
+      id="attachment-search"
+      method="GET"
+      resource-url="[[resourceUrl]]"
+      resource-action="index"
+      page="[[page]]"
+      limit="[[limit]]"
+      sort-fields="[[sortFields]]"
+      query-fields="[[queryFields]]"
+      loading="{{loading}}"
+      last-response="{{lastResponse}}">
     </things-ajax>
 
     <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
@@ -124,7 +124,7 @@
               <div id="fields" class="layout vertical flex">
                 <div class="layout horizontal flex">
                   <things-input-field label="[[lName]]" value="{{searchName}}"></things-input-field>
-                  <things-storage-combo label="[[lStorage]]" items ="{{searchStorageArray}}" query-fields="[[storageFilters]]" hidden="[[useDefaultStorage]]"></things-storage-combo>
+                  <things-storage-combo label="[[lStorage]]" items="{{searchStorageArray}}" query-fields="[[storageFilters]]" hidden="[[useDefaultStorage]]"></things-storage-combo>
                 </div>
               </div>
             <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
@@ -141,19 +141,19 @@
       </paper-toolbar>
     </paper-dialog>
 
-        	
+          
 
-	</template>
+  </template>
 
-	<script>
-		Polymer({
-			is: 'things-image-selector-dialog',
+  <script>
+    Polymer({
+      is: 'things-image-selector-dialog',
 
       behaviors: [
         Things.GlobalBehavior
       ],
 
-			properties: {
+      properties: {
 
         /**
          * image objects를 호출할 resource url
@@ -309,7 +309,7 @@
         dataObj: {
           type: Object
         }
-			},
+      },
 
       listeners: {
         'things-card-image-selected': '_onImageSelected',
@@ -343,7 +343,7 @@
       },
 
       /**
-       * dialog에서 image를 클릭하면 value와 metaData에 Obj형태의 detail 정보를 담는다.
+       * dialog에서 image를 클릭하면
        * 만약 displayField가 정의 되었다면 detail에서 해당 필드 값을 value에 초기화 함 (기본값은 name)
        */
       _onImageSelected: function(e) {
@@ -352,10 +352,7 @@
 
         this.value = (this.displayFullUrl) ? (baseUrl + '/download/' + tempValue) : tempValue;
 
-        e.detail.value = this.value;
-        this.metaData = e.detail;
-
-				this.dataObj['value'] = this.metaData.value;
+        this.dataObj['value'] = this.value;
         this.callback.apply(this.dataObj.owner, [this.dataObj]);
 
         this.$['dialog'].close();
@@ -401,6 +398,8 @@
         } else if (event.detail.item && event.detail.item.id) {
           this.searchStorage = event.detail.item.id;
         }
+
+        this.refreshImages();
       },
 
       /**
@@ -421,14 +420,14 @@
             name: 'name',
             operator: 'contains',
             value: searchName
-     	  	});
+          });
         }
 
         if (searchStorage) {
           filters.push({
             name: 'storage_info_id',
-     	    	operator: 'in',
-	          value: searchStorage
+            operator: 'in',
+            value: searchStorage
           });
         }
 
@@ -516,6 +515,6 @@
 
         this.$['dialog'].open();
       }   
-		})
-	</script>
+    })
+  </script>
 </dom-module>
