@@ -1,6 +1,5 @@
 <link ref="import" href="../polymer/polymer.html">
 <link ref="import" href="../iron-input/iron-input.html">
-<link rel="import" href="things-image-selector-dialog.html">
 
 <!--
 `<things-image-selector>` Things Image Selector
@@ -45,7 +44,6 @@
         <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear">
         </paper-icon-button>
         <iron-icon prefix on-tap="toggleBtnTap"></iron-icon>
-        <things-image-selector-dialog id="image-selector-dialog"></things-image-selector-dialog>
     </template>
     <script>
         Polymer({
@@ -189,7 +187,7 @@
                     searchStorage: this.searchStorage
                 };
 
-                this.$['image-selector-dialog'].dialogToggle(dataObj, this._applySelectedImage);
+                app.$['dialog-manager'].openImageSelectorDialog(dataObj, this._applySelectedImage);
             },
 
             _applySelectedImage: function(dataObj) {
