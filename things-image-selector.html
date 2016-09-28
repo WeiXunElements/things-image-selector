@@ -187,10 +187,7 @@
                     searchStorage: this.searchStorage
                 };
 
-                var event = {};
-                event.dataObj = dataObj;
-                event.callback = this._applySelectedImage;
-
+                var event = { dataObj: dataObj, callback: this._applySelectedImage };
                 this.fire('things-image-selector-toggle', event);
             },
 
