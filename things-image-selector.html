@@ -187,7 +187,11 @@
                     searchStorage: this.searchStorage
                 };
 
-                app.$['dialog-manager'].openImageSelectorDialog(dataObj, this._applySelectedImage);
+                var event = {};
+                event.dataObj = dataObj;
+                event.callback = this._applySelectedImage;
+
+                this.fire('things-image-selector-toggle', event);
             },
 
             _applySelectedImage: function(dataObj) {
