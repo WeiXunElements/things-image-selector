@@ -11,13 +11,17 @@
 <link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
 <link rel="import" href="../things-upload/things-file-upload.html">
 
+<!--
+  Image Selector Dialog
+-->
+
 <dom-module id="things-image-selector-dialog">
   <template>
     <style>
       :host {
         display: block;
         background-color: var(--things-whitegrey-background-color);
-      }    
+      }
       paper-dialog {
         position: fixed;
         top: 10%;
@@ -133,16 +137,12 @@
       </paper-material>
 
       <things-card-image-list id="card-list" class="container flex" items="[[newItems]]" image-field="id" detail-fields="[[detailFields]]" is-selector display-full-url></things-card-image-list>
-
       <iron-scroll-threshold id="scroller" scroll-target="card-list" on-lower-threshold="goNextPage"></iron-scroll-threshold>
 
       <paper-toolbar>
         <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]">[[bUpload]]</things-button>
       </paper-toolbar>
     </paper-dialog>
-
-          
-
   </template>
 
   <script>
@@ -155,7 +155,6 @@
       ],
 
       properties: {
-
         /**
          * image objects를 호출할 resource url
          */
@@ -222,6 +221,15 @@
         displayField: {
           type: String,
           value: 'name'
+        },
+
+        /**
+         * input field에 표시할 field 값을 선택 합니다.
+         * 기본값은 name 필드
+         */
+        valueField: {
+          type: String,
+          value: 'id'
         },
 
         /**
@@ -319,6 +327,7 @@
         'default-storage.things-ajax-response': '_defaultStorageValueChanged',
         'dialog.iron-overlay-opened': 'refreshImages'
       },
+
       observers: [
         'onSearchStorageArrayChange(searchStorageArray)'
       ],
@@ -329,10 +338,7 @@
       _responseChanged: function(lastResponse) {
         var newItems = lastResponse && lastResponse.items ? lastResponse.items : [];
         this.totalCount = lastResponse && lastResponse.total ? lastResponse.total : this.newItems.length;
-        newItems.forEach(function(item) {
-          item.attachment_id = item.id;
-        });
-
+        newItems.forEach(function(item) { item.attachment_id = item.id; });
         this.newItems = (this.page == 1) ? newItems : this.newItems.concat(newItems);
       },
 
@@ -349,13 +355,12 @@
        */
       _onImageSelected: function(e) {
         var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
-        var tempValue = e.detail[this.displayField];
-
+        //var tempValue = e.detail[this.displayField];
+        var tempValue = e.detail[this.valueField];
         this.value = (this.displayFullUrl) ? (baseUrl + '/download/' + tempValue) : tempValue;
-
         this.dataObj['value'] = this.value;
+        this.dataObj.attachment = e.detail;
         this.callback.apply(this.dataObj.owner, [this.dataObj]);
-
         this.$['dialog'].close();
       },
 
@@ -380,9 +385,7 @@
        * searchStorage Array를 받아 와서 String으로 바꾸어 searchStorage에 설정한다.
        */
       onSearchStorageArrayChange: function(searchStorageArray){
-        var StorageArr = searchStorageArray.map(function(storage){
-            if(storage)return storage.id;
-        });
+        var StorageArr = searchStorageArray.map(function(storage) { if(storage) return storage.id; });
         var storages = JSON.stringify(StorageArr);
         storages = storages.replace('null,','');
         storages = storages.replace('[','');
@@ -412,24 +415,16 @@
         var searchStorage = this.searchStorage;
         var filters = [];
 
-        if (this.newItems && this.newItems.length > 0) {
+        if(this.newItems && this.newItems.length > 0) {
           this.newItems = [];
         }
 
-        if (searchName) {
-          filters.push({
-            name: 'name',
-            operator: 'contains',
-            value: searchName
-          });
+        if(searchName) {
+          filters.push({ name: 'name', operator: 'contains', value: searchName });
         }
 
-        if (searchStorage) {
-          filters.push({
-            name: 'storage_info_id',
-            operator: 'in',
-            value: searchStorage
-          });
+        if(searchStorage) {
+          filters.push({ name: 'storage_info_id', operator: 'in', value: searchStorage });
         }
 
         this.queryFields = filters;
@@ -456,15 +451,16 @@
        * 다음 페이지 이동
        */
       goNextPage: function() {
-        if (this.totalCount == 0) {
+        if(this.totalCount == 0) {
           this.$.scroller.clearTriggers();
           return;
         }
 
-        if ((this.page * this.limit) < this.totalCount) {
+        if((this.page * this.limit) < this.totalCount) {
           this.page = this.page + 1;
           this.$['attachment-search'].generateRequest();
         }
+
         this.$.scroller.clearTriggers();
       },
 
@@ -472,7 +468,7 @@
        * enter 입력시
        */
       handleKeyPress: function(e) {
-        if (e.charCode == 13) {
+        if(e.charCode == 13) {
           this._onSearchFormTap();
         }
       },
@@ -486,6 +482,7 @@
 
         this.resourceUrl = (dataObj.resourceUrl) ? dataObj.resourceUrl : this.resourceUrl;
         this.detailFields = (dataObj.detailFields) ? dataObj.detailFields : this.detailFields;
+        this.valueField = (dataObj.valueField) ? dataObj.valueField : this.valueField;
         this.displayField = (dataObj.displayField) ? dataObj.displayField : this.displayField;
         this.displayFullUrl = (dataObj.displayFullUrl) ? dataObj.displayFullUrl : this.displayFullUrl;
         this.baseUrlAlias = (dataObj.baseUrlAlias) ? dataObj.baseUrlAlias : this.baseUrlAlias;
@@ -502,15 +499,15 @@
           this.dataObj = dataObj;
         }
 
-        if (this.newItems && this.newItems.length > 0) {
+        if(this.newItems && this.newItems.length > 0) {
           this.newItems = [];
         }
 
-        if (this.defaultStorage == null) {
+        if(this.defaultStorage == null) {
           this.defaultStorage = this.globals.defaultImageStorage;
         }
 
-        if (this.defaultStorage) {
+        if(this.defaultStorage) {
           this.useDefaultStorage = true;
         }
 
@@ -523,6 +520,6 @@
       close: function() {
         this.$['dialog'].close();
       }
-    })
+    });
   </script>
 </dom-module>
