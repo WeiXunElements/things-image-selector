@@ -480,7 +480,7 @@
       /**
        * image selector dialog toggle
        */
-      dialogToggle: function(dataObj, callback) {
+      open: function(dataObj, callback) {
         this.dataObj = '';
         this.callback = '';
 
@@ -515,7 +515,14 @@
         }
 
         this.$['dialog'].open();
-      }   
+      },
+
+      /**
+       * image selector dialog close
+       */
+      close: function() {
+        this.$['dialog'].close();
+      }
     })
   </script>
 </dom-module>
