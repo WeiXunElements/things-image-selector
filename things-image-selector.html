@@ -40,7 +40,7 @@
   </style>
 
   <template>
-    <input is="iron-input" id="id-value-field" name="[[name]]" bind-value="[[value]]" hidden>
+    <input is="iron-input" id="id-value-field" name="[[name]]" bind-value="{{value}}" hidden>
     <label>[[label]]</label>
     <input is="iron-input" bind-value="{{displayValue}}">
     <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear"></paper-icon-button>
@@ -75,7 +75,8 @@
          * image 선택시 표시할 표현 값
          */
         displayValue: {
-          type: String
+          type: String,
+          observer: '_displayValueChanged'
         },
 
         /**
@@ -83,14 +84,8 @@
          */
         value: {
           type: String,
+          notify: true,
           observer: '_valueChanged'
-        },
-
-        /**
-         * 선택한 이미지의 metaData가 담겨 있는 Object
-         */
-        metaData: {
-          type: Object
         },
 
         /**
@@ -189,10 +184,27 @@
       },
 
       /**
+       * 화면에 출력하는 값 변경에 대한 observer
+       * valueField와 displayField가 동일하면
+       * 해당 value와 display value의 값을 동기화한다.
+       */
+      _displayValueChanged: function(displayValue) {
+        if(this.valueField == this.displayField && this.value != displayValue) {
+          this.value = displayValue;
+        }
+      },
+
+      /**
        * value 값이 변경 되었을때 발생하는 이벤트
        */
       _valueChanged: function(value) {
-        this.fire('things-image-changed', value);
+        if(this.valueField == this.displayField) {
+          this.displayValue = value;
+        }
+
+        if(value && typeof(value) == 'string') {
+          this.fire('things-image-changed', value);
+        }
       },
 
       /**
@@ -225,7 +237,7 @@
        */
       _applySelectedImage: function(dataObj) {
         this.value = dataObj.value;
-        this.displayValue = dataObj.attachment[this.displayField];
+        this.displayValue = dataObj.displayValue;
       },
 
       /**
@@ -233,7 +245,6 @@
        */
       clearValue: function() {
         this.value = '';
-        this.metaData = '';
       }
     });
   </script>

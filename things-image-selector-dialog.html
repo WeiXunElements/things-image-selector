@@ -355,10 +355,16 @@
        */
       _onImageSelected: function(e) {
         var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
-        //var tempValue = e.detail[this.displayField];
-        var tempValue = e.detail[this.valueField];
-        this.value = (this.displayFullUrl) ? (baseUrl + '/download/' + tempValue) : tempValue;
-        this.dataObj['value'] = this.value;
+        var value = e.detail[this.valueField];
+        var displayValue = e.detail[this.displayField];
+
+        if(this.displayFullUrl) {
+          value = baseUrl + '/download/' + value;
+          displayValue = value;
+        }
+
+        this.dataObj.value = value;
+        this.dataObj.displayValue = displayValue;
         this.dataObj.attachment = e.detail;
         this.callback.apply(this.dataObj.owner, [this.dataObj]);
         this.$['dialog'].close();
