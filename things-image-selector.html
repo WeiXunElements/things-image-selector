@@ -40,7 +40,7 @@
   </style>
 
   <template>
-    <input is="iron-input" id="id-value-field" name="[[name]]" bind-value="{{value}}" hidden>
+    <input is="iron-input" id="id-value-field" name="[[name]]_id" bind-value="{{value}}" hidden>
     <label>[[label]]</label>
     <input is="iron-input" bind-value="{{displayValue}}">
     <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear"></paper-icon-button>
@@ -122,7 +122,15 @@
           type: String,
           value: 'id'
         },
-
+        /**
+         * 선택된 데이터 오버젝트
+         */
+        objValue: {
+          type: Object,
+          value:{},
+          notify: true,
+          observer: '_objValueChanged'
+        },
         /**
          * input field에 full url을 표시할지 여부를 결정 합니다.
          */
@@ -206,7 +214,13 @@
           this.fire('things-image-changed', value);
         }
       },
-
+      /**
+       * 선택된 오버젝트가 변하면
+       */
+      _objValueChanged: function(object){
+        this.set('value',object[this.valueField])
+        this.set('displayValue',object[this.displayField])
+      },
       /**
        * 이미지 선택을 위한 다이얼로그를 오픈한다.
        */
@@ -228,7 +242,7 @@
           searchStorage: this.searchStorage
         };
 
-        var event = { dataObj: dataObj, callback: this._applySelectedImage };
+        var event = { dataObj: dataObj, callback: this._applySelectedImage.bind(this) };
         this.fire('things-image-selector-toggle', event);
       },
 
@@ -236,8 +250,12 @@
        * 이미지를 선택했을 때 ...
        */
       _applySelectedImage: function(dataObj) {
-        this.value = dataObj.value;
-        this.displayValue = dataObj.displayValue;
+        if(this.baseUrlAlias){
+          this.value = dataObj.value;
+          this.displayValue = dataObj.displayValue;
+        }else{
+          this.set('objValue',dataObj.attachment);
+        }
       },
 
       /**
