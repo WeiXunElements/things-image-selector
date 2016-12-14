@@ -2,6 +2,7 @@
 <link ref="import" href="../iron-input/iron-input.html">
 <link rel="import" href="../things-global-behavior/things-global-behavior.html">
 <link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
+
 <!--
 `<things-image-selector>` Things Image Selector
 
@@ -13,6 +14,7 @@
 
 @demo demo/index.html
 -->
+
 <dom-module id="things-image-selector">
   <style>
     :host {
@@ -122,6 +124,7 @@
           type: String,
           value: 'id'
         },
+
         /**
          * 선택된 데이터 오버젝트
          */
@@ -131,6 +134,7 @@
           notify: true,
           observer: '_objValueChanged'
         },
+
         /**
          * input field에 full url을 표시할지 여부를 결정 합니다.
          */
@@ -214,6 +218,7 @@
           this.fire('things-image-changed', value);
         }
       },
+
       /**
        * 선택된 오버젝트가 변하면
        */
@@ -221,6 +226,7 @@
         this.set('value',object[this.valueField])
         this.set('displayValue',object[this.displayField])
       },
+
       /**
        * 이미지 선택을 위한 다이얼로그를 오픈한다.
        */
@@ -239,7 +245,8 @@
           storageFilters: this.storageFilters,
           useUpload: this.useUpload,
           searchName: this.searchName,
-          searchStorage: this.searchStorage
+          searchStorage: this.searchStorage,
+          selectedImageId: this.value
         };
 
         var event = { dataObj: dataObj, callback: this._applySelectedImage.bind(this) };
@@ -250,10 +257,10 @@
        * 이미지를 선택했을 때 ...
        */
       _applySelectedImage: function(dataObj) {
-        if(this.baseUrlAlias){
+        if(this.baseUrlAlias) {
           this.value = dataObj.value;
           this.displayValue = dataObj.displayValue;
-        }else{
+        } else {
           this.set('objValue',dataObj.attachment);
         }
       },

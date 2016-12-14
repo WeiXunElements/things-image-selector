@@ -128,7 +128,12 @@
               <div id="fields" class="layout vertical flex">
                 <div class="layout horizontal flex">
                   <things-input-field label="[[lName]]" value="{{searchName}}"></things-input-field>
-                  <things-storage-combo label="[[lStorage]]" items="{{searchStorageArray}}" query-fields="[[storageFilters]]" hidden="[[useDefaultStorage]]"></things-storage-combo>
+                  <things-storage-combo
+                    label="[[lStorage]]"
+                    items="{{searchStorageArray}}"
+                    query-fields="[[storageFilters]]"
+                    hidden="[[useDefaultStorage]]">
+                  </things-storage-combo>
                 </div>
               </div>
             <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
@@ -136,7 +141,17 @@
         </div>
       </paper-material>
 
-      <things-card-image-list id="card-list" class="container flex" items="[[newItems]]" image-field="id" detail-fields="[[detailFields]]" is-selector display-full-url></things-card-image-list>
+      <things-card-image-list 
+        id="card-list" 
+        class="container flex" 
+        items="[[newItems]]" 
+        image-field="id" 
+        detail-fields="[[detailFields]]"
+        selected-image-id="[[selectedImageId]]"
+        is-selector 
+        display-full-url>
+      </things-card-image-list>
+      
       <iron-scroll-threshold id="scroller" scroll-target="card-list" on-lower-threshold="goNextPage"></iron-scroll-threshold>
 
       <paper-toolbar>
@@ -193,6 +208,13 @@
         lastResponse: {
           type: Object,
           observer: '_responseChanged'
+        },
+
+        /**
+         * 이미 선택된 이미지 아이디 
+         */
+        selectedImageId: {
+          type: String
         },
 
         /**
@@ -499,23 +521,16 @@
         this.useUpload = (dataObj.useUpload) ? dataObj.useUpload : this.useUpload;
         this.searchName = (dataObj.searchName) ? dataObj.searchName : this.searchName;
         this.searchStorage = (dataObj.searchStorage) ? dataObj.searchStorage : this.searchStorage;
+        this.selectedImageId = (dataObj && dataObj.selectedImageId) ? dataObj.selectedImageId : null;
 
         if(callback && dataObj) {
           this.callback = callback;
           this.dataObj = dataObj;
         }
 
-        if(this.newItems && this.newItems.length > 0) {
-          this.newItems = [];
-        }
-
-        if(this.defaultStorage == null) {
-          this.defaultStorage = this.globals.defaultImageStorage;
-        }
-
-        if(this.defaultStorage) {
-          this.useDefaultStorage = true;
-        }
+        if(this.newItems && this.newItems.length > 0) this.newItems = [];
+        if(this.defaultStorage == null) this.defaultStorage = this.globals.defaultImageStorage;
+        if(this.defaultStorage) this.useDefaultStorage = true;
 
         this.$['image-selector-dialog'].open();
       },
