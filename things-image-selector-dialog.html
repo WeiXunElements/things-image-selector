@@ -127,8 +127,9 @@
             <form is="iron-form" action="[[action]]" content-type="[[contentType]]" last-response="{{lastResponse}}" with-credentials="[[withCredentials]]">
               <div id="fields" class="layout vertical flex">
                 <div class="layout horizontal flex">
-                  <things-input-field label="[[lName]]" value="{{searchName}}"></things-input-field>
+                  <things-input-field label="[[lName]]" class="flex" value="{{searchName}}"></things-input-field>
                   <things-storage-combo
+                    class="flex"
                     label="[[lStorage]]"
                     items="{{searchStorageArray}}"
                     query-fields="[[storageFilters]]"
