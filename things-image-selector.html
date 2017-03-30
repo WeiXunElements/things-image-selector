@@ -4,7 +4,7 @@
 <link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
 
 <!--
-`<things-image-selector>` Things Image Selector
+## Things Image Selector
 
   Example
 
@@ -12,7 +12,6 @@
       resource-url="attachments">
     </things-image-selector>
 
-@demo demo/index.html
 -->
 
 <dom-module id="things-image-selector">
@@ -61,6 +60,8 @@
       properties: {
         /**
          * selector field 앞에 붙는 label property
+         * *******
+         * @type {String}
          */
         label: {
           type: String
@@ -68,13 +69,17 @@
 
         /**
          * Form Load시에 서버에서 받은 데이터와 things-resource-selector값과 매핑하기 위한 필드명.
+         * *******
+         * @type {String}
          */
         name : {
           type: String
-        },                
+        },
 
         /**
          * image 선택시 표시할 표현 값
+         * *******
+         * @type {String}
          */
         displayValue: {
           type: String,
@@ -83,6 +88,8 @@
 
         /**
          * image 선택시 field에 mapping 되는 value property
+         * *******
+         * @type {String}
          */
         value: {
           type: String,
@@ -92,6 +99,8 @@
 
         /**
          * image objects를 호출할 resource url
+         * *******
+         * @type {String}
          */
         resourceUrl: {
           type: String,
@@ -101,6 +110,8 @@
         /**
          * detail form field에 mapping 시킬 data 목록들로 빈간이 없이 ','로 구분하여 입력합니다.
          * ex) name,description,file_size
+         * *******
+         * @type {String}
          */
         detailFields: {
           type: String,
@@ -110,6 +121,8 @@
         /**
          * input field에 표시할 field 값을 선택 합니다.
          * 기본값은 name 필드
+         * *******
+         * @type {String}
          */
         displayField: {
           type: String,
@@ -117,8 +130,10 @@
         },
 
         /**
-         * 선택시 실제값 필드 
+         * 선택시 실제값 필드
          * 기본값은 id 필드
+         * *******
+         * @type {String}
          */
         valueField: {
           type: String,
@@ -127,6 +142,8 @@
 
         /**
          * 선택된 데이터 오버젝트
+         * *******
+         * @type {Object}
          */
         objValue: {
           type: Object,
@@ -137,6 +154,8 @@
 
         /**
          * input field에 full url을 표시할지 여부를 결정 합니다.
+         * *******
+         * @type {Boolean}
          */
         displayFullUrl: {
           type: Boolean,
@@ -145,6 +164,8 @@
 
         /**
          * baseUrl을 변수화 하기 위해 사용하는 property
+         * *******
+         * @type {String}
          */
         baseUrlAlias: {
           type: String
@@ -152,6 +173,8 @@
 
         /**
          * storage를 초기에 설정하기 위한 property
+         * *******
+         * @type {String}
          */
         defaultStorage: {
           type: String
@@ -159,6 +182,8 @@
 
         /**
          * 이름으로 검색 할 때 추가되는 검색 조건
+         * *******
+         * @type {Array}
          */
         queryFields: {
           type: Array,
@@ -167,6 +192,8 @@
 
         /**
          * storage combo를 통해 검색 조건을 설정하기 위한 property
+         * *******
+         * @type {Array}
          */
         storageFilters: {
           type: Array
@@ -174,6 +201,8 @@
 
         /**
          * upload 버튼 활성화 여부
+         * *******
+         * @type {Boolean}
          */
         useUpload: {
           type: Boolean,
@@ -182,6 +211,8 @@
 
         /**
          * 검색 조건에 쓰일 name
+         * *******
+         * @type {String}
          */
         searchName: {
           type: String
@@ -189,6 +220,8 @@
 
         /**
          * 검색 조건에 쓰일 storage
+         * *******
+         * @type {String}
          */
         searchStorage: {
           type: String
@@ -229,6 +262,7 @@
 
       /**
        * 이미지 선택을 위한 다이얼로그를 오픈한다.
+       * ********
        */
       openImageSelectorDialog: function() {
         var dataObj = {
@@ -267,6 +301,7 @@
 
       /**
        * 선택한 이미지의 정보들을 삭제 합니다.
+       * *******
        */
       clearValue: function() {
         this.value = '';
