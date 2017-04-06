@@ -33,7 +33,7 @@
         @apply(--layout-vertical);
       }
       paper-dialog::shadow .toolbar-tools.paper-toolbar {
-        padding: 0
+        padding: 0 
       }
       paper-dialog::shadow span.title.things-image-selector {
         margin-left: 15px !important
@@ -87,7 +87,7 @@
       iron-scroll-threshold+paper-toolbar::shadow #topBar {
         float: right;
         margin-right: 9px
-      }
+      }    
     </style>
 
     <things-i18n-msg msgid="label.image-selector" msg="{{lImageSelector}}" auto hidden>Image Selector</things-i18n-msg>
@@ -100,7 +100,7 @@
       id="default-storage"
       resource-action="get">
     </things-ajax>
-
+    
     <things-ajax
       id="attachment-search"
       method="GET"
@@ -114,7 +114,7 @@
       last-response="{{lastResponse}}">
     </things-ajax>
 
-    <paper-dialog id="image-selector-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal always-on-top>
+    <paper-dialog id="image-selector-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal always-on-top no-cancel-on-esc-key=[[noCancelOnEscKey]]>
       <paper-toolbar>
         <span class="title">[[lImageSelector]]</span>
         <div class="buttonsGroup">
@@ -142,17 +142,17 @@
         </div>
       </paper-material>
 
-      <things-card-image-list
-        id="card-list"
-        class="container flex"
-        items="[[newItems]]"
-        image-field="id"
+      <things-card-image-list 
+        id="card-list" 
+        class="container flex" 
+        items="[[newItems]]" 
+        image-field="id" 
         detail-fields="[[detailFields]]"
         selected-image-id="[[selectedImageId]]"
-        is-selector
+        is-selector 
         display-full-url>
       </things-card-image-list>
-
+      
       <iron-scroll-threshold id="scroller" scroll-target="card-list" on-lower-threshold="goNextPage"></iron-scroll-threshold>
 
       <paper-toolbar>
@@ -173,8 +173,6 @@
       properties: {
         /**
          * image objects를 호출할 resource url
-         * *******
-         * @type {String}
          */
         resourceUrl: {
           type: String,
@@ -183,8 +181,6 @@
 
         /**
          * 총 페이지 수
-         * *******
-         * @type {Number}
          */
         totalCount: {
           type: Number,
@@ -193,8 +189,6 @@
 
         /**
          * 현재 페이지
-         * *******
-         * @type {Number}
          */
         page: {
           type: Number,
@@ -203,8 +197,6 @@
 
         /**
          * 한 페이지 당 보여질 레코드 수
-         * *******
-         * @type {Number}
          */
         limit: {
           type: Number,
@@ -213,8 +205,6 @@
 
         /**
          * ajax 호출을 통해 받는 response
-         * *******
-         * @type {Object}
          */
         lastResponse: {
           type: Object,
@@ -222,9 +212,7 @@
         },
 
         /**
-         * 이미 선택된 이미지 아이디
-         * *******
-         * @type {String}
+         * 이미 선택된 이미지 아이디 
          */
         selectedImageId: {
           type: String
@@ -232,8 +220,6 @@
 
         /**
          * image가 아닌 파일들을 필터링한 후 초기화 하는 items object
-         * *******
-         * @type {Array}
          */
         newItems: {
           type: Array,
@@ -245,8 +231,6 @@
         /**
          * detail form field에 mapping 시킬 data 목록들로 빈간이 없이 ','로 구분하여 입력합니다.
          * ex) name,description,file_size
-         * *******
-         * @type {String}
          */
         detailFields: {
           type: String,
@@ -256,8 +240,6 @@
         /**
          * input field에 표시할 field 값을 선택 합니다.
          * 기본값은 name 필드
-         * *******
-         * @type {String}
          */
         displayField: {
           type: String,
@@ -267,8 +249,6 @@
         /**
          * input field에 표시할 field 값을 선택 합니다.
          * 기본값은 name 필드
-         * *******
-         * @type {String}
          */
         valueField: {
           type: String,
@@ -277,8 +257,6 @@
 
         /**
          * input field에 full url을 표시할지 여부를 결정 합니다.
-         * *******
-         * @type {Boolean}
          */
         displayFullUrl: {
           type: Boolean,
@@ -287,8 +265,6 @@
 
         /**
          * baseUrl을 변수화 하기 위해 사용하는 property
-         * *******
-         * @type {String}
          */
         baseUrlAlias: {
           type: String
@@ -296,8 +272,6 @@
 
         /**
          * storage를 초기에 설정하기 위한 property
-         * *******
-         * @type {String}
          */
         defaultStorage: {
           type: String,
@@ -306,8 +280,6 @@
 
         /**
          * ajax sorting field
-         * *******
-         * @type {Array}
          */
         sortFields: {
           type: Array,
@@ -321,8 +293,6 @@
 
         /**
          * 이름으로 검색 할 때 추가되는 검색 조건
-         * *******
-         * @type {Array}
          */
         queryFields: {
           type: Array,
@@ -331,8 +301,6 @@
 
         /**
          * storage combo를 통해 검색 조건을 설정하기 위한 property
-         * *******
-         * @type {Array}
          */
         storageFilters: {
           type: Array
@@ -340,8 +308,6 @@
 
         /**
          * upload 버튼 활성화 여부
-         * *******
-         * @type {Boolean}
          */
         useUpload: {
           type: Boolean,
@@ -350,8 +316,6 @@
 
         /**
          * 검색 조건에 쓰일 name
-         * *******
-         * @type {String}
          */
         searchName: {
           type: String
@@ -359,8 +323,6 @@
 
         /**
          * 검색 조건에 쓰일 storage
-         * *******
-         * @type {String}
          */
         searchStorage: {
           type: String
@@ -368,8 +330,6 @@
 
         /**
          * 그리드에서 호출 시 callback 함수
-         * *******
-         * @type {Function}
          */
         callback: {
           type: Function
@@ -377,11 +337,18 @@
 
         /**
          * 그리드에서 호출시 그리드의 메타 데이터
-         * *******
-         * @type {Object}
          */
         dataObj: {
           type: Object
+        },
+        /**
+         * Set to true to disable canceling the overlay with the ESC key.
+         * True로 설정시 cancel dialog에서 ESC key로 꺼지지 않음
+         * @type {Boolean}
+         */
+        noCancelOnEscKey:{
+          type: Boolean,
+          value: false
         }
       },
 
@@ -450,11 +417,10 @@
       _defaultStorageValueChanged: function(e) {
         this.searchStorage = e.detail.id;
         this.refreshImages();
-      },
+      },      
 
       /**
        * searchStorage Array를 받아 와서 String으로 바꾸어 searchStorage에 설정한다.
-       * ******
        */
       onSearchStorageArrayChange: function(searchStorageArray){
         var StorageArr = searchStorageArray.map(function(storage) { if(storage) return storage.id; });
@@ -467,7 +433,6 @@
 
       /**
        * storage combo에서 값변경시
-       * *******
        */
       storageChanged: function(event) {
         if (event.detail.value && typeof(event.detail.value) == 'number') {
@@ -481,7 +446,6 @@
 
       /**
        * 셀렉터에 출력된 이미지를 refresh하는 버튼
-       * *******
        */
       refreshImages: function() {
         this.page = 1;
@@ -507,7 +471,6 @@
 
       /**
        * 버튼 클릭시 upload dialog toggle
-       * *******
        */
       toggleFileUpload: function() {
         var upload = document.createElement('things-file-upload');
@@ -524,7 +487,6 @@
 
       /**
        * 다음 페이지 이동
-       * *******
        */
       goNextPage: function() {
         if(this.totalCount == 0) {
@@ -542,7 +504,6 @@
 
       /**
        * enter 입력시
-       * *******
        */
       handleKeyPress: function(e) {
         if(e.charCode == 13) {
@@ -552,7 +513,6 @@
 
       /**
        * image selector dialog toggle
-       * ********
        */
       open: function(dataObj, callback) {
         this.dataObj = '';
@@ -587,16 +547,11 @@
 
       /**
        * image selector dialog close
-       * *******
        */
       close: function() {
         this.$['image-selector-dialog'].close();
       },
 
-            /**
-             * image selector dialog get
-             * *******
-             */
       getDialog: function() {
         return this.$['image-selector-dialog'];
       }
