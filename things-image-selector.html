@@ -41,7 +41,7 @@
   </style>
 
   <template>
-    <input is="iron-input" id="id-value-field" name="[[name]]_id" bind-value="{{value}}" hidden>
+    <input is="iron-input" id="id-value-field" name="[[name]]_id" value="{{value}}" hidden>
     <label>[[label]]</label>
     <input is="iron-input" bind-value="{{displayValue}}">
     <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear"></paper-icon-button>
@@ -243,6 +243,7 @@
        * value 값이 변경 되었을때 발생하는 이벤트
        */
       _valueChanged: function(value) {
+
         if(this.valueField == this.displayField) {
           this.displayValue = value;
         }
@@ -304,7 +305,7 @@
        * *******
        */
       clearValue: function() {
-        this.value = '';
+        this.set('value', null);
       }
     });
   </script>
