@@ -1,6 +1,6 @@
 # things-image-selector
 
-## 파일 선택용 컴포넌트, Event `things-image-selector-toggle`를 통하여 `things-dialog-manager`로 Event전송하여 `things-image-selector-dialog`를 화면에 표현함.
+## Component for selecting files. The component sends the event to `things-dialog-manager` via `things-image-selector-toggle` event to display `things-image-selector-dialog` on the screen.
 
 Example:
 
@@ -16,8 +16,7 @@ Example:
 
 ## Dependencies
 
-Element dependencies are managed via [Bower](http://bower.io/). You can
-install that via:
+Element dependencies are managed via [Bower](http://bower.io/). You can install that via:
 
     npm install -g bower
 
