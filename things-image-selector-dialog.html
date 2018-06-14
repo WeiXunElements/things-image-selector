@@ -14,6 +14,7 @@ Copyright © HatioLab Inc. All rights reserved.
 <link rel="import" href="../things-global-behavior/things-global-behavior.html">
 <link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
 <link rel="import" href="../things-upload/things-file-upload.html">
+<link rel="import" href="../things-dialog-resize-behavior/things-dialog-resize-behavior.html">
 
 <!--
   Image Selector Dialog
@@ -27,6 +28,8 @@ Copyright © HatioLab Inc. All rights reserved.
         background-color: var(--things-whitegrey-background-color);
       }
       paper-dialog {
+        height: 80%;
+        width: 70%;
         position: fixed;
         top: 10%;
         bottom: 10%;
@@ -119,7 +122,7 @@ Copyright © HatioLab Inc. All rights reserved.
     </things-ajax>
 
     <paper-dialog id="image-selector-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal always-on-top no-cancel-on-esc-key=[[noCancelOnEscKey]]>
-      <paper-toolbar>
+      <paper-toolbar id="image-selector-toolbar">
         <span class="title">[[lImageSelector]]</span>
         <div class="buttonsGroup">
           <button dialog-dismiss class="close-btn"></button>
@@ -168,11 +171,6 @@ Copyright © HatioLab Inc. All rights reserved.
   <script>
     Polymer({
       is: 'things-image-selector-dialog',
-
-      behaviors: [
-        Things.GlobalBehavior,
-        Things.ViewOpenBehavior
-      ],
 
       properties: {
         /**
@@ -353,8 +351,22 @@ Copyright © HatioLab Inc. All rights reserved.
         noCancelOnEscKey:{
           type: Boolean,
           value: false
+        },
+        _dialogId:{
+          type: String,
+          value: 'image-selector-dialog'
+        },
+        _dragTarget:{
+          type: String,
+          value: 'image-selector-toolbar'
         }
       },
+
+      behaviors: [ 
+        Things.GlobalBehavior,
+        Things.ViewOpenBehavior,
+        Things.DialogResizeBehavior
+      ],
 
       listeners: {
         'things-card-image-selected': '_onImageSelected',
