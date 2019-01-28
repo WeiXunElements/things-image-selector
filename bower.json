@@ -1,6 +1,6 @@
 {
   "name": "things-image-selector",
-  "version": "v2.2.2",
+  "version": "v2.2.3",
   "authors": ["Hatio Lab. <heartyoh@hatiolab.com>"],
   "description": "An element providing Things image selector.",
   "keywords": ["web-component", "polymer", "seed"],

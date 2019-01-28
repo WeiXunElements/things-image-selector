@@ -2,10 +2,16 @@
 @license
 Copyright © HatioLab Inc. All rights reserved.
 -->
-<link ref="import" href="../polymer/polymer.html">
-<link ref="import" href="../iron-input/iron-input.html">
-<link rel="import" href="../things-global-behavior/things-global-behavior.html">
-<link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html">
+<link ref="import" href="../polymer/polymer.html" />
+<link ref="import" href="../iron-input/iron-input.html" />
+<link
+  rel="import"
+  href="../things-global-behavior/things-global-behavior.html"
+/>
+<link
+  rel="import"
+  href="../things-view-open-behavior/things-view-open-behavior.html"
+/>
 
 <!--
 ## Things Image Selector
@@ -24,31 +30,45 @@ Copyright © HatioLab Inc. All rights reserved.
       display: block;
     }
     label {
-      @apply(--things-label);
+      @apply (--things-label);
     }
     input {
-      @apply(--things-input);
+      @apply (--things-input);
       width: calc(65% - 37px);
     }
     paper-icon-button {
-      @apply(--things-small-icon);
+      @apply (--things-small-icon);
       margin-right: 7px;
       margin-left: -27px;
-      opacity: .4;
+      opacity: 0.4;
       position: relative;
       top: -2px;
     }
     iron-icon {
-      @apply(--things-picker-button);
+      @apply (--things-picker-button);
       background: url(/images/icon-resource-select.png) 50% -147px no-repeat var(--paper-blue-grey-300);
     }
   </style>
 
   <template>
-    <input is="iron-input" id="id-value-field" name="[[name]]_id" bind-value="{{value}}" hidden>
+    <input
+      is="iron-input"
+      id="id-value-field"
+      name="[[name]]_id"
+      bind-value="{{value}}"
+      hidden
+    />
     <label>[[label]]</label>
-    <input is="iron-input" bind-value="{{displayValue}}">
-    <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear"></paper-icon-button>
+    <input is="iron-input" bind-value="{{displayValue}}" />
+    <!-- prettier-ignore-attribute on-tap -->
+    <paper-icon-button
+      suffix
+      on-tap="clearValue"
+      icon="clear"
+      alt="clear"
+      title="clear"
+    ></paper-icon-button>
+    <!-- prettier-ignore-attribute on-tap -->
     <iron-icon prefix on-tap="openImageSelectorDialog"></iron-icon>
   </template>
 
@@ -56,10 +76,7 @@ Copyright © HatioLab Inc. All rights reserved.
     Polymer({
       is: 'things-image-selector',
 
-      behaviors: [
-          Things.GlobalBehavior,
-          Things.ViewOpenBehavior
-      ],
+      behaviors: [Things.GlobalBehavior, Things.ViewOpenBehavior],
 
       properties: {
         /**
@@ -76,7 +93,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * *******
          * @type {String}
          */
-        name : {
+        name: {
           type: String
         },
 
@@ -151,7 +168,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         objValue: {
           type: Object,
-          value:{},
+          value: {},
           notify: true,
           observer: '_objValueChanged'
         },
@@ -238,8 +255,11 @@ Copyright © HatioLab Inc. All rights reserved.
        * 해당 value와 display value의 값을 동기화한다.
        */
       _displayValueChanged: function(displayValue) {
-        if(this.valueField == this.displayField && this.value != displayValue) {
-          this.value = displayValue;
+        if (
+          this.valueField == this.displayField &&
+          this.value != displayValue
+        ) {
+          this.value = displayValue
         }
       },
 
@@ -247,21 +267,21 @@ Copyright © HatioLab Inc. All rights reserved.
        * value 값이 변경 되었을때 발생하는 이벤트
        */
       _valueChanged: function(value) {
-        if(this.valueField == this.displayField) {
-          this.displayValue = value;
+        if (this.valueField == this.displayField) {
+          this.displayValue = value
         }
 
-        if(value && typeof(value) == 'string') {
-          this.fire('things-image-changed', value);
+        if (value && typeof value == 'string') {
+          this.fire('things-image-changed', value)
         }
       },
 
       /**
        * 선택된 오버젝트가 변하면
        */
-      _objValueChanged: function(object){
-        this.set('value',object[this.valueField])
-        this.set('displayValue',object[this.displayField])
+      _objValueChanged: function(object) {
+        this.set('value', object[this.valueField])
+        this.set('displayValue', object[this.displayField])
       },
 
       /**
@@ -285,21 +305,24 @@ Copyright © HatioLab Inc. All rights reserved.
           searchName: this.searchName,
           searchStorage: this.searchStorage,
           selectedImageId: this.value
-        };
+        }
 
-        var event = { dataObj: dataObj, callback: this._applySelectedImage.bind(this) };
-        this.fire('things-image-selector-toggle', event);
+        var event = {
+          dataObj: dataObj,
+          callback: this._applySelectedImage.bind(this)
+        }
+        this.fire('things-image-selector-toggle', event)
       },
 
       /**
        * 이미지를 선택했을 때 ...
        */
       _applySelectedImage: function(dataObj) {
-        if(this.baseUrlAlias) {
-          this.value = dataObj.value;
-          this.displayValue = dataObj.displayValue;
+        if (this.baseUrlAlias) {
+          this.value = dataObj.value
+          this.displayValue = dataObj.displayValue
         } else {
-          this.set('objValue',dataObj.attachment);
+          this.set('objValue', dataObj.attachment)
         }
       },
 
@@ -308,8 +331,8 @@ Copyright © HatioLab Inc. All rights reserved.
        * *******
        */
       clearValue: function() {
-        this.value = '';
+        this.value = ''
       }
-    });
+    })
   </script>
 </dom-module>
