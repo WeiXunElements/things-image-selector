@@ -1,17 +1,11 @@
 <!--
 @license
-Copyright © HatioLab Inc. All rights reserved.
+Copyright © 2015-2021 Shenzhen Weixun All rights reserved.
 -->
 <link ref="import" href="../polymer/polymer.html" />
 <link ref="import" href="../iron-input/iron-input.html" />
-<link
-  rel="import"
-  href="../things-global-behavior/things-global-behavior.html"
-/>
-<link
-  rel="import"
-  href="../things-view-open-behavior/things-view-open-behavior.html"
-/>
+<link rel="import" href="../things-global-behavior/things-global-behavior.html" />
+<link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html" />
 
 <!--
 ## Things Image Selector
@@ -51,23 +45,11 @@ Copyright © HatioLab Inc. All rights reserved.
   </style>
 
   <template>
-    <input
-      is="iron-input"
-      id="id-value-field"
-      name="[[name]]_id"
-      bind-value="{{value}}"
-      hidden
-    />
+    <input is="iron-input" id="id-value-field" name="[[name]]_id" bind-value="{{value}}" hidden />
     <label>[[label]]</label>
     <input is="iron-input" bind-value="{{displayValue}}" />
     <!-- prettier-ignore-attribute on-tap -->
-    <paper-icon-button
-      suffix
-      on-tap="clearValue"
-      icon="clear"
-      alt="clear"
-      title="clear"
-    ></paper-icon-button>
+    <paper-icon-button suffix on-tap="clearValue" icon="clear" alt="clear" title="clear"></paper-icon-button>
     <!-- prettier-ignore-attribute on-tap -->
     <iron-icon prefix on-tap="openImageSelectorDialog"></iron-icon>
   </template>
@@ -85,7 +67,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         label: {
-          type: String
+          type: String,
         },
 
         /**
@@ -94,7 +76,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         name: {
-          type: String
+          type: String,
         },
 
         /**
@@ -104,7 +86,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         displayValue: {
           type: String,
-          observer: '_displayValueChanged'
+          observer: '_displayValueChanged',
         },
 
         /**
@@ -115,7 +97,7 @@ Copyright © HatioLab Inc. All rights reserved.
         value: {
           type: String,
           notify: true,
-          observer: '_valueChanged'
+          observer: '_valueChanged',
         },
 
         /**
@@ -125,7 +107,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         resourceUrl: {
           type: String,
-          value: 'attachments/list/image'
+          value: 'attachments/list/image',
         },
 
         /**
@@ -136,7 +118,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         detailFields: {
           type: String,
-          value: 'file_size'
+          value: 'file_size',
         },
 
         /**
@@ -147,7 +129,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         displayField: {
           type: String,
-          value: 'name'
+          value: 'name',
         },
 
         /**
@@ -158,7 +140,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         valueField: {
           type: String,
-          value: 'id'
+          value: 'id',
         },
 
         /**
@@ -170,7 +152,7 @@ Copyright © HatioLab Inc. All rights reserved.
           type: Object,
           value: {},
           notify: true,
-          observer: '_objValueChanged'
+          observer: '_objValueChanged',
         },
 
         /**
@@ -180,7 +162,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         displayFullUrl: {
           type: Boolean,
-          value: false
+          value: false,
         },
 
         /**
@@ -189,7 +171,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         baseUrlAlias: {
-          type: String
+          type: String,
         },
 
         /**
@@ -198,7 +180,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         defaultStorage: {
-          type: String
+          type: String,
         },
 
         /**
@@ -208,7 +190,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         queryFields: {
           type: Array,
-          value: []
+          value: [],
         },
 
         /**
@@ -217,7 +199,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {Array}
          */
         storageFilters: {
-          type: Array
+          type: Array,
         },
 
         /**
@@ -227,7 +209,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         useUpload: {
           type: Boolean,
-          value: false
+          value: false,
         },
 
         /**
@@ -236,7 +218,7 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         searchName: {
-          type: String
+          type: String,
         },
 
         /**
@@ -245,8 +227,8 @@ Copyright © HatioLab Inc. All rights reserved.
          * @type {String}
          */
         searchStorage: {
-          type: String
-        }
+          type: String,
+        },
       },
 
       /**
@@ -254,41 +236,38 @@ Copyright © HatioLab Inc. All rights reserved.
        * valueField와 displayField가 동일하면
        * 해당 value와 display value의 값을 동기화한다.
        */
-      _displayValueChanged: function(displayValue) {
-        if (
-          this.valueField == this.displayField &&
-          this.value != displayValue
-        ) {
-          this.value = displayValue
+      _displayValueChanged: function (displayValue) {
+        if (this.valueField == this.displayField && this.value != displayValue) {
+          this.value = displayValue;
         }
       },
 
       /**
        * value 값이 변경 되었을때 발생하는 이벤트
        */
-      _valueChanged: function(value) {
+      _valueChanged: function (value) {
         if (this.valueField == this.displayField) {
-          this.displayValue = value
+          this.displayValue = value;
         }
 
         if (value && typeof value == 'string') {
-          this.fire('things-image-changed', value)
+          this.fire('things-image-changed', value);
         }
       },
 
       /**
        * 선택된 오버젝트가 변하면
        */
-      _objValueChanged: function(object) {
-        this.set('value', object[this.valueField])
-        this.set('displayValue', object[this.displayField])
+      _objValueChanged: function (object) {
+        this.set('value', object[this.valueField]);
+        this.set('displayValue', object[this.displayField]);
       },
 
       /**
        * 이미지 선택을 위한 다이얼로그를 오픈한다.
        * ********
        */
-      openImageSelectorDialog: function() {
+      openImageSelectorDialog: function () {
         var dataObj = {
           owner: this,
           resourceUrl: this.resourceUrl,
@@ -304,25 +283,25 @@ Copyright © HatioLab Inc. All rights reserved.
           useUpload: this.useUpload,
           searchName: this.searchName,
           searchStorage: this.searchStorage,
-          selectedImageId: this.value
-        }
+          selectedImageId: this.value,
+        };
 
         var event = {
           dataObj: dataObj,
-          callback: this._applySelectedImage.bind(this)
-        }
-        this.fire('things-image-selector-toggle', event)
+          callback: this._applySelectedImage.bind(this),
+        };
+        this.fire('things-image-selector-toggle', event);
       },
 
       /**
        * 이미지를 선택했을 때 ...
        */
-      _applySelectedImage: function(dataObj) {
+      _applySelectedImage: function (dataObj) {
         if (this.baseUrlAlias) {
-          this.value = dataObj.value
-          this.displayValue = dataObj.displayValue
+          this.value = dataObj.value;
+          this.displayValue = dataObj.displayValue;
         } else {
-          this.set('objValue', dataObj.attachment)
+          this.set('objValue', dataObj.attachment);
         }
       },
 
@@ -330,9 +309,9 @@ Copyright © HatioLab Inc. All rights reserved.
        * 선택한 이미지의 정보들을 삭제 합니다.
        * *******
        */
-      clearValue: function() {
-        this.value = ''
-      }
-    })
+      clearValue: function () {
+        this.value = '';
+      },
+    });
   </script>
 </dom-module>

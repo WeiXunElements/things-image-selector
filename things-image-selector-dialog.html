@@ -1,32 +1,20 @@
 <!--
 @license
-Copyright © HatioLab Inc. All rights reserved.
+Copyright © 2015-2021 Shenzhen Weixun All rights reserved.
 -->
 <link ref="import" href="../polymer/polymer.html" />
 <link ref="import" href="../paper-dialog/paper-dialog.html" />
-<link
-  ref="import"
-  href="../paper-dialog-scrollable/paper-dialog-scrollable.html"
-/>
+<link ref="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html" />
 <link ref="import" href="../paper-toolbar/paper-toolbar.html" />
 <link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html" />
 
 <link ref="import" href="../things-ajax/things-ajax.html" />
 <link ref="import" href="../things-i18n-msg/things-i18n-msg.html" />
 <link ref="import" href="../things-card-image/things-card-image-list.html" />
-<link
-  rel="import"
-  href="../things-global-behavior/things-global-behavior.html"
-/>
-<link
-  rel="import"
-  href="../things-view-open-behavior/things-view-open-behavior.html"
-/>
+<link rel="import" href="../things-global-behavior/things-global-behavior.html" />
+<link rel="import" href="../things-view-open-behavior/things-view-open-behavior.html" />
 <link rel="import" href="../things-upload/things-file-upload.html" />
-<link
-  rel="import"
-  href="../things-dialog-resize-behavior/things-dialog-resize-behavior.html"
-/>
+<link rel="import" href="../things-dialog-resize-behavior/things-dialog-resize-behavior.html" />
 
 <!--
   Image Selector Dialog
@@ -109,22 +97,12 @@ Copyright © HatioLab Inc. All rights reserved.
       }
     </style>
 
-    <things-i18n-msg
-      msgid="label.image-selector"
-      msg="{{ lImageSelector }}"
-      auto
-      hidden
+    <things-i18n-msg msgid="label.image-selector" msg="{{ lImageSelector }}" auto hidden
       >Image Selector</things-i18n-msg
     >
-    <things-i18n-msg msgid="label.name" msg="{{ lName }}" auto hidden
-      >Name</things-i18n-msg
-    >
-    <things-i18n-msg msgid="label.storage" msg="{{ lStorage }}" auto hidden
-      >Storage</things-i18n-msg
-    >
-    <things-i18n-msg msgid="button.upload" msg="{{ bUpload }}" auto hidden
-      >Upload</things-i18n-msg
-    >
+    <things-i18n-msg msgid="label.name" msg="{{ lName }}" auto hidden>Name</things-i18n-msg>
+    <things-i18n-msg msgid="label.storage" msg="{{ lStorage }}" auto hidden>Storage</things-i18n-msg>
+    <things-i18n-msg msgid="button.upload" msg="{{ bUpload }}" auto hidden>Upload</things-i18n-msg>
 
     <things-ajax auto id="default-storage" resource-action="get"> </things-ajax>
 
@@ -169,11 +147,7 @@ Copyright © HatioLab Inc. All rights reserved.
           >
             <div id="fields" class="layout vertical flex">
               <div class="layout horizontal flex">
-                <things-input-field
-                  label="[[lName]]"
-                  class="flex"
-                  value="{{ searchName }}"
-                ></things-input-field>
+                <things-input-field label="[[lName]]" class="flex" value="{{ searchName }}"></things-input-field>
                 <things-storage-combo
                   class="flex"
                   label="[[lStorage]]"
@@ -185,11 +159,7 @@ Copyright © HatioLab Inc. All rights reserved.
               </div>
             </div>
             <!-- prettier-ignore-attribute on-tap -->
-            <paper-fab
-              icon="search"
-              title="search"
-              on-tap="_onSearchFormTap"
-            ></paper-fab>
+            <paper-fab icon="search" title="search" on-tap="_onSearchFormTap"></paper-fab>
           </form>
         </div>
       </paper-material>
@@ -215,9 +185,7 @@ Copyright © HatioLab Inc. All rights reserved.
 
       <paper-toolbar>
         <!-- prettier-ignore-attribute on-tap -->
-        <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]"
-          >[[bUpload]]</things-button
-        >
+        <things-button on-tap="toggleFileUpload" hidden="[[!useUpload]]">[[bUpload]]</things-button>
       </paper-toolbar>
     </paper-dialog>
   </template>
@@ -232,7 +200,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         resourceUrl: {
           type: String,
-          value: 'attachments/list/image'
+          value: 'attachments/list/image',
         },
 
         /**
@@ -240,7 +208,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         totalCount: {
           type: Number,
-          value: 0
+          value: 0,
         },
 
         /**
@@ -248,7 +216,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         page: {
           type: Number,
-          value: 1
+          value: 1,
         },
 
         /**
@@ -256,7 +224,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         limit: {
           type: Number,
-          value: 50
+          value: 50,
         },
 
         /**
@@ -264,14 +232,14 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         lastResponse: {
           type: Object,
-          observer: '_responseChanged'
+          observer: '_responseChanged',
         },
 
         /**
          * 이미 선택된 이미지 아이디
          */
         selectedImageId: {
-          type: String
+          type: String,
         },
 
         /**
@@ -279,9 +247,9 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         newItems: {
           type: Array,
-          value: function() {
-            return []
-          }
+          value: function () {
+            return [];
+          },
         },
 
         /**
@@ -290,7 +258,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         detailFields: {
           type: String,
-          value: 'file_size'
+          value: 'file_size',
         },
 
         /**
@@ -299,7 +267,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         displayField: {
           type: String,
-          value: 'name'
+          value: 'name',
         },
 
         /**
@@ -308,7 +276,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         valueField: {
           type: String,
-          value: 'id'
+          value: 'id',
         },
 
         /**
@@ -316,14 +284,14 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         displayFullUrl: {
           type: Boolean,
-          value: false
+          value: false,
         },
 
         /**
          * baseUrl을 변수화 하기 위해 사용하는 property
          */
         baseUrlAlias: {
-          type: String
+          type: String,
         },
 
         /**
@@ -331,7 +299,7 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         defaultStorage: {
           type: String,
-          observer: '_defaultStorageChanged'
+          observer: '_defaultStorageChanged',
         },
 
         /**
@@ -339,14 +307,14 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         sortFields: {
           type: Array,
-          value: function() {
+          value: function () {
             return [
               {
                 field: 'created_at',
-                ascending: false
-              }
-            ]
-          }
+                ascending: false,
+              },
+            ];
+          },
         },
 
         /**
@@ -354,14 +322,14 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         queryFields: {
           type: Array,
-          value: []
+          value: [],
         },
 
         /**
          * storage combo를 통해 검색 조건을 설정하기 위한 property
          */
         storageFilters: {
-          type: Array
+          type: Array,
         },
 
         /**
@@ -369,35 +337,35 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         useUpload: {
           type: Boolean,
-          value: false
+          value: false,
         },
 
         /**
          * 검색 조건에 쓰일 name
          */
         searchName: {
-          type: String
+          type: String,
         },
 
         /**
          * 검색 조건에 쓰일 storage
          */
         searchStorage: {
-          type: String
+          type: String,
         },
 
         /**
          * 그리드에서 호출 시 callback 함수
          */
         callback: {
-          type: Function
+          type: Function,
         },
 
         /**
          * 그리드에서 호출시 그리드의 메타 데이터
          */
         dataObj: {
-          type: Object
+          type: Object,
         },
         /**
          * Set to true to disable canceling the overlay with the ESC key.
@@ -406,30 +374,26 @@ Copyright © HatioLab Inc. All rights reserved.
          */
         noCancelOnEscKey: {
           type: Boolean,
-          value: false
+          value: false,
         },
         _dialogId: {
           type: String,
-          value: 'image-selector-dialog'
+          value: 'image-selector-dialog',
         },
         _dragTarget: {
           type: String,
-          value: 'image-selector-toolbar'
-        }
+          value: 'image-selector-toolbar',
+        },
       },
 
-      behaviors: [
-        Things.GlobalBehavior,
-        Things.ViewOpenBehavior,
-        Things.DialogResizeBehavior
-      ],
+      behaviors: [Things.GlobalBehavior, Things.ViewOpenBehavior, Things.DialogResizeBehavior],
 
       listeners: {
         'things-card-image-selected': '_onImageSelected',
         'scroller.lower-threshold': 'goNextPage',
         'things-combo-value-changed': 'storageChanged',
         'default-storage.things-ajax-response': '_defaultStorageValueChanged',
-        'image-selector-dialog.iron-overlay-opened': 'refreshImages'
+        'image-selector-dialog.iron-overlay-opened': 'refreshImages',
       },
 
       observers: ['onSearchStorageArrayChange(searchStorageArray)'],
@@ -437,240 +401,206 @@ Copyright © HatioLab Inc. All rights reserved.
       /**
        * ajax 호출을 통해 받은 lastResponse에서 image 파일이 아닌 것들을 filltering
        */
-      _responseChanged: function(lastResponse) {
-        var newItems =
-          lastResponse && lastResponse.items ? lastResponse.items : []
-        this.totalCount =
-          lastResponse && lastResponse.total
-            ? lastResponse.total
-            : this.newItems.length
-        newItems.forEach(function(item) {
-          item.attachment_id = item.id
-        })
-        this.newItems =
-          this.page == 1 ? newItems : this.newItems.concat(newItems)
+      _responseChanged: function (lastResponse) {
+        var newItems = lastResponse && lastResponse.items ? lastResponse.items : [];
+        this.totalCount = lastResponse && lastResponse.total ? lastResponse.total : this.newItems.length;
+        newItems.forEach(function (item) {
+          item.attachment_id = item.id;
+        });
+        this.newItems = this.page == 1 ? newItems : this.newItems.concat(newItems);
       },
 
       /**
        * search btn tap event
        */
-      _onSearchFormTap: function() {
-        this.refreshImages()
+      _onSearchFormTap: function () {
+        this.refreshImages();
       },
 
       /**
        * dialog에서 image를 클릭하면
        * 만약 displayField가 정의 되었다면 detail에서 해당 필드 값을 value에 초기화 함 (기본값은 name)
        */
-      _onImageSelected: function(e) {
-        var baseUrl = this.baseUrlAlias
-          ? this.baseUrlAlias
-          : this.get('globals.baseUrl')
-        var value = e.detail[this.valueField]
-        var displayValue = e.detail[this.displayField]
+      _onImageSelected: function (e) {
+        var baseUrl = this.baseUrlAlias ? this.baseUrlAlias : this.get('globals.baseUrl');
+        var value = e.detail[this.valueField];
+        var displayValue = e.detail[this.displayField];
 
         if (this.displayFullUrl) {
-          value = baseUrl + '/download/' + value
-          displayValue = value
+          value = baseUrl + '/download/' + value;
+          displayValue = value;
         }
 
-        this.dataObj.value = value
-        this.dataObj.displayValue = displayValue
-        this.dataObj.attachment = e.detail
-        this.callback.apply(this.dataObj.owner, [this.dataObj])
-        this.$['image-selector-dialog'].close()
+        this.dataObj.value = value;
+        this.dataObj.displayValue = displayValue;
+        this.dataObj.attachment = e.detail;
+        this.callback.apply(this.dataObj.owner, [this.dataObj]);
+        this.$['image-selector-dialog'].close();
       },
 
       /**
        * 전달받은 defaultStorage를 이용하여 ajax 호출 합니다.
        */
-      _defaultStorageChanged: function(defaultStorage) {
+      _defaultStorageChanged: function (defaultStorage) {
         if (defaultStorage) {
-          this.$['default-storage'].resourceUrl =
-            'storage_infos/show_by_name?name=' + defaultStorage
+          this.$['default-storage'].resourceUrl = 'storage_infos/show_by_name?name=' + defaultStorage;
         }
       },
 
       /**
        * ajax 호출 listner로 response를 통해 storage의 값들을 초기화 합니다.
        */
-      _defaultStorageValueChanged: function(e) {
-        this.searchStorage = e.detail.id
-        this.refreshImages()
+      _defaultStorageValueChanged: function (e) {
+        this.searchStorage = e.detail.id;
+        this.refreshImages();
       },
 
       /**
        * searchStorage Array를 받아 와서 String으로 바꾸어 searchStorage에 설정한다.
        */
-      onSearchStorageArrayChange: function(searchStorageArray) {
-        var StorageArr = searchStorageArray.map(function(storage) {
-          if (storage) return storage.id
-        })
-        var storages = JSON.stringify(StorageArr)
-        storages = storages.replace('null,', '')
-        storages = storages.replace('[', '')
-        storages = storages.replace(']', '')
-        this.searchStorage = storages
+      onSearchStorageArrayChange: function (searchStorageArray) {
+        var StorageArr = searchStorageArray.map(function (storage) {
+          if (storage) return storage.id;
+        });
+        var storages = JSON.stringify(StorageArr);
+        storages = storages.replace('null,', '');
+        storages = storages.replace('[', '');
+        storages = storages.replace(']', '');
+        this.searchStorage = storages;
       },
 
       /**
        * storage combo에서 값변경시
        */
-      storageChanged: function(event) {
+      storageChanged: function (event) {
         if (event.detail.value && typeof event.detail.value == 'number') {
-          this.searchStorage = event.detail.value
+          this.searchStorage = event.detail.value;
         } else if (event.detail.item && event.detail.item.id) {
-          this.searchStorage = event.detail.item.id
+          this.searchStorage = event.detail.item.id;
         }
 
-        this.refreshImages()
+        this.refreshImages();
       },
 
       /**
        * 셀렉터에 출력된 이미지를 refresh하는 버튼
        */
-      refreshImages: function() {
-        this.page = 1
-        var searchName = this.searchName
-        var searchStorage = this.searchStorage
-        var filters = []
+      refreshImages: function () {
+        this.page = 1;
+        var searchName = this.searchName;
+        var searchStorage = this.searchStorage;
+        var filters = [];
 
         if (this.newItems && this.newItems.length > 0) {
-          this.newItems = []
+          this.newItems = [];
         }
 
         if (searchName) {
           filters.push({
             name: 'name',
             operator: 'contains',
-            value: searchName
-          })
+            value: searchName,
+          });
         }
 
         if (searchStorage) {
           filters.push({
             name: 'storage_info_id',
             operator: 'in',
-            value: searchStorage
-          })
+            value: searchStorage,
+          });
         }
 
-        this.queryFields = filters
-        this.$['attachment-search'].generateRequest()
+        this.queryFields = filters;
+        this.$['attachment-search'].generateRequest();
       },
 
       /**
        * 버튼 클릭시 upload dialog toggle
        */
-      toggleFileUpload: function() {
-        var upload = document.createElement('things-file-upload')
-        upload.id = 'file-upload'
-        upload.target = 'upload'
-        upload.method = 'POST'
-        upload.timeout = 300000
-        upload.hidden = false
-        upload.defaultStorage = this.defaultStorage
-        upload.$.storage.queryFields = this.storageFilters
-        upload.selectorHidden = this.useDefaultStorage
-        this.openPopupView(upload, true)
+      toggleFileUpload: function () {
+        var upload = document.createElement('things-file-upload');
+        upload.id = 'file-upload';
+        upload.target = 'upload';
+        upload.method = 'POST';
+        upload.timeout = 300000;
+        upload.hidden = false;
+        upload.defaultStorage = this.defaultStorage;
+        upload.$.storage.queryFields = this.storageFilters;
+        upload.selectorHidden = this.useDefaultStorage;
+        this.openPopupView(upload, true);
       },
 
       /**
        * 다음 페이지 이동
        */
-      goNextPage: function() {
+      goNextPage: function () {
         if (this.totalCount == 0) {
-          this.$.scroller.clearTriggers()
-          return
+          this.$.scroller.clearTriggers();
+          return;
         }
 
         if (this.page * this.limit < this.totalCount) {
-          this.page = this.page + 1
-          this.$['attachment-search'].generateRequest()
+          this.page = this.page + 1;
+          this.$['attachment-search'].generateRequest();
         }
 
-        this.$.scroller.clearTriggers()
+        this.$.scroller.clearTriggers();
       },
 
       /**
        * enter 입력시
        */
-      handleKeyPress: function(e) {
+      handleKeyPress: function (e) {
         if (e.charCode == 13) {
-          this._onSearchFormTap()
+          this._onSearchFormTap();
         }
       },
 
       /**
        * image selector dialog toggle
        */
-      open: function(dataObj, callback) {
-        this.dataObj = ''
-        this.callback = ''
+      open: function (dataObj, callback) {
+        this.dataObj = '';
+        this.callback = '';
 
-        this.resourceUrl = dataObj.resourceUrl
-          ? dataObj.resourceUrl
-          : this.resourceUrl
-        this.detailFields = dataObj.detailFields
-          ? dataObj.detailFields
-          : this.detailFields
-        this.valueField = dataObj.valueField
-          ? dataObj.valueField
-          : this.valueField
-        this.displayField = dataObj.displayField
-          ? dataObj.displayField
-          : this.displayField
-        this.displayFullUrl = dataObj.displayFullUrl
-          ? dataObj.displayFullUrl
-          : this.displayFullUrl
-        this.baseUrlAlias = dataObj.baseUrlAlias
-          ? dataObj.baseUrlAlias
-          : this.baseUrlAlias
-        this.defaultStorage = dataObj.defaultStorage
-          ? dataObj.defaultStorage
-          : this.defaultStorage
-        this.sortFields = dataObj.sortFields
-          ? dataObj.sortFields
-          : this.sortFields
-        this.queryFields = dataObj.queryFields
-          ? dataObj.queryFields
-          : this.queryFields
-        this.storageFilters = dataObj.storageFilters
-          ? dataObj.storageFilters
-          : this.storageFilters
-        this.useUpload = dataObj.useUpload ? dataObj.useUpload : this.useUpload
-        this.searchName = dataObj.searchName
-          ? dataObj.searchName
-          : this.searchName
-        this.searchStorage = dataObj.searchStorage
-          ? dataObj.searchStorage
-          : this.searchStorage
-        this.selectedImageId =
-          dataObj && dataObj.selectedImageId ? dataObj.selectedImageId : null
+        this.resourceUrl = dataObj.resourceUrl ? dataObj.resourceUrl : this.resourceUrl;
+        this.detailFields = dataObj.detailFields ? dataObj.detailFields : this.detailFields;
+        this.valueField = dataObj.valueField ? dataObj.valueField : this.valueField;
+        this.displayField = dataObj.displayField ? dataObj.displayField : this.displayField;
+        this.displayFullUrl = dataObj.displayFullUrl ? dataObj.displayFullUrl : this.displayFullUrl;
+        this.baseUrlAlias = dataObj.baseUrlAlias ? dataObj.baseUrlAlias : this.baseUrlAlias;
+        this.defaultStorage = dataObj.defaultStorage ? dataObj.defaultStorage : this.defaultStorage;
+        this.sortFields = dataObj.sortFields ? dataObj.sortFields : this.sortFields;
+        this.queryFields = dataObj.queryFields ? dataObj.queryFields : this.queryFields;
+        this.storageFilters = dataObj.storageFilters ? dataObj.storageFilters : this.storageFilters;
+        this.useUpload = dataObj.useUpload ? dataObj.useUpload : this.useUpload;
+        this.searchName = dataObj.searchName ? dataObj.searchName : this.searchName;
+        this.searchStorage = dataObj.searchStorage ? dataObj.searchStorage : this.searchStorage;
+        this.selectedImageId = dataObj && dataObj.selectedImageId ? dataObj.selectedImageId : null;
 
         if (callback && dataObj) {
-          this.callback = callback
-          this.dataObj = dataObj
+          this.callback = callback;
+          this.dataObj = dataObj;
         }
 
-        if (this.newItems && this.newItems.length > 0) this.newItems = []
-        if (this.defaultStorage == null)
-          this.defaultStorage = this.globals.defaultImageStorage
-        if (this.defaultStorage) this.useDefaultStorage = true
+        if (this.newItems && this.newItems.length > 0) this.newItems = [];
+        if (this.defaultStorage == null) this.defaultStorage = this.globals.defaultImageStorage;
+        if (this.defaultStorage) this.useDefaultStorage = true;
 
-        this.$['image-selector-dialog'].open()
+        this.$['image-selector-dialog'].open();
       },
 
       /**
        * image selector dialog close
        */
-      close: function() {
-        this.$['image-selector-dialog'].close()
+      close: function () {
+        this.$['image-selector-dialog'].close();
       },
 
-      getDialog: function() {
-        return this.$['image-selector-dialog']
-      }
-    })
+      getDialog: function () {
+        return this.$['image-selector-dialog'];
+      },
+    });
   </script>
 </dom-module>
