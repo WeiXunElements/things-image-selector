@@ -1,6 +1,6 @@
 {
   "name": "things-image-selector",
-  "version": "v2.2.4",
+  "version": "v2.2.5",
   "authors": ["Shenzhen Weixun"],
   "description": "An element providing Things image selector.",
   "keywords": ["web-component", "polymer", "seed"],
@@ -14,12 +14,12 @@
     "paper-dialog": "PolymerElements/paper-dialog#^1.0.4",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.1.4",
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.1.4",
-    "things-ajax": "ThingsElements/things-ajax",
-    "things-card-image": "ThingsElements/things-card-image",
+    "things-ajax": "WeiXunElements/things-ajax",
+    "things-card-image": "WeiXunElements/things-card-image",
     "iron-scroll-threshold": "^1.0.2",
-    "things-global-behavior": "ThingsElements/things-global-behavior",
-    "things-view-open-behavior": "ThingsElements/things-view-open-behavior",
-    "things-upload": "ThingsElements/things-upload"
+    "things-global-behavior": "WeiXunElements/things-global-behavior",
+    "things-view-open-behavior": "WeiXunElements/things-view-open-behavior",
+    "things-upload": "WeiXunElements/things-upload"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
